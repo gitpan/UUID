@@ -18,7 +18,7 @@ use vars qw(@ISA %EXPORT_TAGS @EXPORT_OK $VERSION);
 
 @EXPORT_OK = ( @{$EXPORT_TAGS{'all'}} );
 
-$VERSION = '0.02';
+$VERSION = '0.03';
 
 bootstrap UUID $VERSION;
 
@@ -30,6 +30,8 @@ __END__
 =head1 NAME
 
 UUID - Perl extension for using UUID interfaces as defined in e2fsprogs.
+On Windows systems it uses native RCP library, on other systems the implementation
+uses libuuid library.
 
 =head1 SYNOPSIS
 
@@ -48,7 +50,8 @@ UUID::{generate, parse, unparse}
 
 =head1 AUTHOR
 
-Peter J. Braam <braam@mountainviewdata.com>
+Peter J. Braam <braam@clusterfs.com>
+Lukas Zapletal <Lukas.Zapletal@seznam.cz>
 
 =head1 SEE ALSO
 

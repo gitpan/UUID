@@ -1,6 +1,11 @@
 Revision history for Perl extension UUID.
 
 0.01  Thu Feb  8 06:07:59 2001
-	- original version; created by h2xs 1.20 with options
-		-A -n UUID
+	- original version; created by h2xs 1.20 with options -A -n UUID
+0.02  ??? ???  ? ??:??:?? 2001
+	- some small corrections
+0.03  Fri Jul 23 08:00:00 2002
+	- added native support for Win32
+	- Peter`s e-mail changed
+	- project maintainer is now Lukas
 
