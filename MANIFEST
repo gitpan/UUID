@@ -1,0 +1,6 @@
+Changes
+MANIFEST
+Makefile.PL
+UUID.pm
+UUID.xs
+test.pl
