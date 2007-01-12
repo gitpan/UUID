@@ -30,8 +30,6 @@ __END__
 =head1 NAME
 
 UUID - Perl extension for using UUID interfaces as defined in e2fsprogs.
-On Windows systems it uses native RCP library, on other systems the implementation
-uses libuuid library.
 
 =head1 SYNOPSIS
 
@@ -48,10 +46,15 @@ With these 3 routines UUID''s can easily be generated and parsed/un-parsed.
 
 UUID::{generate, parse, unparse}
 
+=head1 LICENSE
+
+This library is licensed under the Perl Artistic License. Details of this license can be found within the 'License' text file
+
 =head1 AUTHOR
 
-Peter J. Braam <braam@clusterfs.com>
-Lukas Zapletal <Lukas.Zapletal@seznam.cz>
+Colin Faber <cfaber@clusterfs.com>
+
+Peter J. Braam <braam@mountainviewdata.com>
 
 =head1 SEE ALSO
 

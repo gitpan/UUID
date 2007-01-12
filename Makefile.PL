@@ -1,21 +1,11 @@
 use ExtUtils::MakeMaker;
-use Config;
-
-my $libs;
-
-$win32 = ($Config{osname} =~ /win32/i);
-if ($win32) {
-	print "Running on win32\n";
-	$libs = "-lrpcrt4.lib";
-} else {
-	$libs = "-luuid";
-}
-
+# See lib/ExtUtils/MakeMaker.pm for details of how to influence
+# the contents of the Makefile that is written.
 WriteMakefile(
     'NAME'              => 'UUID',
     'VERSION_FROM'      => 'UUID.pm', # finds $VERSION
     'PREREQ_PM'         => {}, # e.g., Module::Name => 1.1
-    'LIBS'              => $libs,
+    'LIBS'              => ['-luuid'], # e.g., '-lm'
     'DEFINE'            => '', # e.g., '-DHAVE_SOMETHING'
     'INC'               => '', # e.g., '-I/usr/include/other'
 );
