@@ -18,7 +18,7 @@ use vars qw(@ISA %EXPORT_TAGS @EXPORT_OK $VERSION);
 
 @EXPORT_OK = ( @{$EXPORT_TAGS{'all'}} );
 
-$VERSION = '0.03';
+$VERSION = '0.04';
 
 bootstrap UUID $VERSION;
 
@@ -51,6 +51,8 @@ UUID::{generate, parse, unparse}
 This library is licensed under the Perl Artistic License. Details of this license can be found within the 'License' text file
 
 =head1 AUTHOR
+
+Joseph N. Hall <joseph.nathan.hall@gmail.com>
 
 Colin Faber <cfaber@clusterfs.com>
 

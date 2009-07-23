@@ -1,5 +1,9 @@
 Revision history for Perl extension UUID.
 
+0.04 Wed Jul 22 20:17:26 PDT 2009
+      - Seems to be abandoned (again)
+      - Bump version number and upload to PAUSE
+
 0.03  Fri Jan 12 15:24:24 MST 2007
       - Added Artistic license
       - Took over maintaining (Colin Faber - CFABER)
