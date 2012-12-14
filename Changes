@@ -1,17 +1,20 @@
 Revision history for Perl extension UUID.
 
+0.05 Fri Dec 14 20:00:00 GMT 2012
+  - Took over maintaining (Lukas Zapletal - LZAP)
+  - Version bump (no changes)
+  - Releasing in the original location
+
 0.04 Wed Jul 22 20:17:26 PDT 2009
-      - Seems to be abandoned (again)
-      - Bump version number and upload to PAUSE
+  - Seems to be abandoned (again)
+  - Bump version number and upload to PAUSE
 
 0.03  Fri Jan 12 15:24:24 MST 2007
-      - Added Artistic license
-      - Took over maintaining (Colin Faber - CFABER)
+  - Added Artistic license
+  - Took over maintaining (Colin Faber - CFABER)
 
 0.02  Unknown
-       - unknown changes
+  - unknown changes
 
 0.01  Thu Feb  8 06:07:59 2001
-	- original version; created by h2xs 1.20 with options
-		-A -n UUID
-
+  - original version; created by h2xs 1.20 with options -A -n UUID

@@ -18,7 +18,7 @@ use vars qw(@ISA %EXPORT_TAGS @EXPORT_OK $VERSION);
 
 @EXPORT_OK = ( @{$EXPORT_TAGS{'all'}} );
 
-$VERSION = '0.04';
+$VERSION = '0.05';
 
 bootstrap UUID $VERSION;
 
