@@ -37,6 +37,16 @@ int do_parse(SV *in, SV * out)
 	return rc;
 }
 
+SV* do_uuid()
+{
+	uuid_t uuid;
+	char str[37];
+
+	uuid_generate(uuid);
+	uuid_unparse(uuid, str);
+	return newSVpv(str, 36);
+}
+
 
 
 MODULE = UUID		PACKAGE = UUID		
@@ -66,4 +76,11 @@ parse(in, out)
 	OUTPUT:
 	RETVAL
 
+SV*
+uuid()
+	PROTOTYPE:
+	CODE:
+	RETVAL = do_uuid();
+	OUTPUT:
+	RETVAL
 

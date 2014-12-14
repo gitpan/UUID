@@ -6,7 +6,7 @@
 # Change 1..1 below to 1..last_test_to_print .
 # (It may become useful if the test is moved to ./t subdirectory.)
 
-BEGIN { $| = 1; print "1..5\n"; }
+BEGIN { $| = 1; print "1..6\n"; }
 END {print "not ok 1\n" unless $loaded;}
 use UUID;
 $loaded = 1;
@@ -32,5 +32,8 @@ print ($var eq $var2 ? '' : 'not ', "ok 4\n");
 
 $rc = UUID::parse("Peter is a moose", $var2);
 print ($rc ? '' : 'not ', "ok 5\n");
+
+$rc = UUID::uuid();
+print (length($rc)==36 ? '' : 'not', "ok 6\n");
 
 exit (0);

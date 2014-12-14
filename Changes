@@ -1,5 +1,7 @@
 Revision history for Perl extension UUID.
 
+  - Added uuid()
+
 0.05 Fri Dec 14 20:00:00 GMT 2012
   - Took over maintaining (Lukas Zapletal - LZAP)
   - Version bump (no changes)
