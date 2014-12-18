@@ -14,11 +14,11 @@ use vars qw(@ISA %EXPORT_TAGS @EXPORT_OK $VERSION);
 # If you do not need this, moving things directly into @EXPORT or @EXPORT_OK
 # will save memory.
 
-%EXPORT_TAGS = ( 'all' => [qw(&generate &parse &unparse)] );
+%EXPORT_TAGS = ( 'all' => [qw(&generate &parse &unparse &uuid)] );
 
 @EXPORT_OK = ( @{$EXPORT_TAGS{'all'}} );
 
-$VERSION = '0.05';
+$VERSION = '0.06';
 
 bootstrap UUID $VERSION;
 
@@ -38,13 +38,15 @@ UUID - Perl extension for using UUID interfaces as defined in e2fsprogs.
   UUID::unparse($uuid, $string); # change $uuid to 36 byte string
   $rc = UUID::parse($string, $uuid); # map string to UUID, return -1 on error
 
+  $string = UUID::uuid(); # generate new UUID and return string only
+
 =head1 DESCRIPTION
 
-With these 3 routines UUID''s can easily be generated and parsed/un-parsed.
+With these 4 routines UUID''s can easily be generated and parsed/un-parsed.
 
 =head2 EXPORT
 
-UUID::{generate, parse, unparse}
+UUID::{generate, parse, unparse, uuid}
 
 =head1 LICENSE
 
