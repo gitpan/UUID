@@ -1,12 +1,9 @@
 Changes
-inc/ExtUtils/Liblist.pm
-inc/ExtUtils/Liblist/Kid.pm
-inc/FindLib.pm
-inc/tryuuid.h
 License
 Makefile.PL
 MANIFEST			This list of files
 META.yml
+README
 test.pl
 UUID.pm
 UUID.xs

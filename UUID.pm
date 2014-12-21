@@ -18,7 +18,7 @@ use vars qw(@ISA %EXPORT_TAGS @EXPORT_OK $VERSION);
 
 @EXPORT_OK = ( @{$EXPORT_TAGS{'all'}} );
 
-$VERSION = '0.07';
+$VERSION = '0.08';
 
 bootstrap UUID $VERSION;
 
@@ -57,7 +57,6 @@ The following functions are exported only by request.
 
 All the functions may be imported using the ":all" tag.
 
-
 =head1 COPYRIGHT AND LICENSE
 
 This software is Copyright (c) 2014 by Rick Myers.
@@ -82,7 +81,7 @@ Authors and/or previous maintainers:
 
   Peter J. Braam <braam@mountainviewdata.com>
 
-  Lukas Zaplatel <lzap@cpan.org>
+  Lukas Zapletal <lzap@cpan.org>
 
 =head1 SEE ALSO
 

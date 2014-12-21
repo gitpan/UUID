@@ -1,5 +1,7 @@
 Revision history for Perl extension UUID.
 
+  - Added README with pod2text UUID.pm README
+
 0.07 Sat Dec 20 21:12:17 EST 2014
   - Updated Makefile.PL
   - Added search for -luuid at Makefile.PL time

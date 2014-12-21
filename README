@@ -1,0 +1,54 @@
+NAME
+    UUID - Perl extension for using UUID interfaces as defined in e2fsprogs.
+
+SYNOPSIS
+      use UUID;
+
+      UUID::generate($uuid);             # generates a 128 bit uuid
+      UUID::unparse($uuid, $string);     # change $uuid to 36 byte string
+
+      $rc = UUID::parse($string, $uuid); # map string to UUID, return -1 on error
+
+      $string = UUID::uuid();            # generate new UUID, return string only
+
+DESCRIPTION
+    With these 4 routines UUID's can easily be generated and
+    parsed/un-parsed.
+
+  Exports
+    The following functions are exported only by request.
+
+        generate
+        unparse
+        parse
+        uuid
+
+    All the functions may be imported using the ":all" tag.
+
+COPYRIGHT AND LICENSE
+    This software is Copyright (c) 2014 by Rick Myers.
+
+    This is free software, licensed under:
+
+      The Artistic License 2.0 (GPL Compatible)
+
+    Details of this license can be found within the 'License' text file.
+
+AUTHOR
+    Current maintainer:
+
+      Rick Myers <jrm@cpan.org>.
+
+    Authors and/or previous maintainers:
+
+      Joseph N. Hall <joseph.nathan.hall@gmail.com>
+
+      Colin Faber <cfaber@clusterfs.com>
+
+      Peter J. Braam <braam@mountainviewdata.com>
+
+      Lukas Zaplatel <lzap@cpan.org>
+
+SEE ALSO
+    perl(1).
+
