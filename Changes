@@ -1,8 +1,13 @@
 Revision history for Perl extension UUID.
 
+0.07 Sat Dec 20 21:12:17 EST 2014
+  - Updated Makefile.PL
+  - Added search for -luuid at Makefile.PL time
+  - Updated license and pod to Artistic 2.0
+
 0.06 Thu Dec 18 08:01:44 EST 2014
-  - Added uuid()
   - Took over maintaining (Rick Myers - JRM)
+  - Added uuid()
 
 0.05 Fri Dec 14 20:00:00 GMT 2012
   - Took over maintaining (Lukas Zapletal - LZAP)

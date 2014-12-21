@@ -18,7 +18,7 @@ use vars qw(@ISA %EXPORT_TAGS @EXPORT_OK $VERSION);
 
 @EXPORT_OK = ( @{$EXPORT_TAGS{'all'}} );
 
-$VERSION = '0.06';
+$VERSION = '0.07';
 
 bootstrap UUID $VERSION;
 
@@ -34,34 +34,59 @@ UUID - Perl extension for using UUID interfaces as defined in e2fsprogs.
 =head1 SYNOPSIS
 
   use UUID;
-  UUID::generate($uuid); # generates a 128 bit uuid
-  UUID::unparse($uuid, $string); # change $uuid to 36 byte string
+
+  UUID::generate($uuid);             # generates a 128 bit uuid
+  UUID::unparse($uuid, $string);     # change $uuid to 36 byte string
+
   $rc = UUID::parse($string, $uuid); # map string to UUID, return -1 on error
 
-  $string = UUID::uuid(); # generate new UUID and return string only
+  $string = UUID::uuid();            # generate new UUID, return string only
 
 =head1 DESCRIPTION
 
-With these 4 routines UUID''s can easily be generated and parsed/un-parsed.
+With these 4 routines UUID's can easily be generated and parsed/un-parsed.
 
-=head2 EXPORT
+=head2 Exports
 
-UUID::{generate, parse, unparse, uuid}
+The following functions are exported only by request.
 
-=head1 LICENSE
+    generate
+    unparse
+    parse
+    uuid
 
-This library is licensed under the Perl Artistic License. Details of this license can be found within the 'License' text file
+All the functions may be imported using the ":all" tag.
+
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is Copyright (c) 2014 by Rick Myers.
+
+This is free software, licensed under:
+
+  The Artistic License 2.0 (GPL Compatible)
+
+Details of this license can be found within the 'License' text file.
 
 =head1 AUTHOR
 
-Joseph N. Hall <joseph.nathan.hall@gmail.com>
+Current maintainer:
 
-Colin Faber <cfaber@clusterfs.com>
+  Rick Myers <jrm@cpan.org>.
 
-Peter J. Braam <braam@mountainviewdata.com>
+Authors and/or previous maintainers:
+
+  Joseph N. Hall <joseph.nathan.hall@gmail.com>
+
+  Colin Faber <cfaber@clusterfs.com>
+
+  Peter J. Braam <braam@mountainviewdata.com>
+
+  Lukas Zaplatel <lzap@cpan.org>
 
 =head1 SEE ALSO
 
 perl(1).
 
 =cut
+

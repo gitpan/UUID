@@ -1,9 +1,13 @@
 Changes
+inc/ExtUtils/Liblist.pm
+inc/ExtUtils/Liblist/Kid.pm
+inc/FindLib.pm
+inc/tryuuid.h
 License
-MANIFEST
 Makefile.PL
+MANIFEST			This list of files
+META.yml
+test.pl
 UUID.pm
 UUID.xs
-test.pl
-META.yml                                 Module meta-data (added by MakeMaker)
 META.json                                Module JSON meta-data (added by MakeMaker)
