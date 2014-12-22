@@ -1,5 +1,11 @@
 Revision history for Perl extension UUID.
 
+0.10 Mon Dec 22 11:55:30 EST 2014
+  - Added clear() and is_null()
+  - Added copy() and compare()
+  - Added unparse_lower() and unparse_upper()
+  - Added generate_random() and generate_time()
+
 0.09 Mon Dec 22 04:31:26 EST 2014
   - Drag test.pl into this century using Test.pm
   - Add postamble to Makefile to generate README

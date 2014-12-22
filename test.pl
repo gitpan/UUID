@@ -1,20 +1,89 @@
 use Test;
-BEGIN { plan tests => 6 }
+BEGIN { plan tests => 28 }
 use UUID;
 
 
-UUID::generate( $var );
-ok length $var, 16;
+UUID::generate( $bin );
+ok length $bin, 16;
 
-UUID::unparse( $var, $out );
-$rc = UUID::parse( $out, $var2 );
+UUID::generate_random( $bin );
+ok length $bin, 16;
+
+UUID::generate_time( $bin );
+ok length $bin, 16;
+
+UUID::unparse( $bin, $str );
+$rc = UUID::parse( $str, $bin2 );
 ok $rc, 0;
-ok $var, $var2;
+ok $bin, $bin2;
 
-$var = 'Peter is a moose';
-$rc = UUID::parse( $var, $var2 );
+UUID::unparse_lower( $bin, $str );
+UUID::unparse_upper( $bin, $str2 );
+ok length( $str ), 36;
+ok $str, qr/^[-a-f0-9]+$/;
+ok lc( $str ), lc( $str2 );
+ok $str ne $str2;
+
+# content of uuid is unchanged if parse fails
+UUID::generate( $bin );
+$bin2 = $bin;
+$str = 'Peter is a moose';
+$rc = UUID::parse( $str, $bin );
 ok $rc, -1;
-ok $var, 'Peter is a moose';
+ok $bin, $bin2;
+
+UUID::generate( $bin );
+$rc = UUID::is_null( $bin );
+ok $rc, 0;
+
+UUID::clear( $bin );
+ok length( $bin ), 16;
+ok UUID::is_null( $bin ), 1;
+
+$bin = 'bogus value';
+ok UUID::is_null( $bin ), 0; # != the null uuid, right?
+
+$bin = '1234567890123456';
+ok UUID::is_null( $bin ), 0; # still not null
+
+# make sure compare operands sane
+UUID::generate( $bin1 );
+$bin2 = 'x';
+ok abs(UUID::compare( $bin1, $bin2 )), 1;
+ok abs(UUID::compare( $bin2, $bin1 )), 1;
+$bin2 = 'some silly ridulously long string that couldnt possibly be a uuid';
+ok abs(UUID::compare( $bin1, $bin2 )), 1;
+ok abs(UUID::compare( $bin2, $bin1 )), 1;
+
+# sane compare
+UUID::generate( $uuid1 );
+$bin2 = '1234567890123456';
+ok UUID::compare( $bin1, $bin2 ), -UUID::compare( $bin2, $bin1 );
+$bin2 = $bin1;
+ok UUID::compare( $bin1, $bin2 ), 0;
+
+# make sure we get back a null if src isnt sane
+$bin1 = 'x';
+UUID::copy( $bin2, $bin1 );
+ok UUID::is_null( $bin2 ), 1;
+$bin1 = 'another really really really long sting';
+UUID::copy( $bin2, $bin1 );
+ok UUID::is_null( $bin2 );
+
+# sane copy
+UUID::generate( $bin1 );
+$bin2 = '1234567890123456';
+UUID::copy( $bin2, $bin1 );
+ok UUID::compare( $bin1, $bin2 ), 0;
+
+# make sure we get back the same scalar we passed in
+$bin1 = '1234567890123456';
+UUID::generate( $bin2 );
+$save1 = \$bin2;
+UUID::copy( $bin2, $bin1 );
+$save2 = \$bin2;
+ok $save1, $save2;
+ok $$save1, $$save2;
 
 $rc = UUID::uuid();
 ok length($rc), 36;

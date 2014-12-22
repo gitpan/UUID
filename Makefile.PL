@@ -8,31 +8,20 @@ check_lib_or_exit(
     lib      => 'uuid',
     header   => 'uuid/uuid.h',
     function => qq/
-        uuid_t u;
-        uuid_generate(u);
-        return 0;
-    /,
-);
-
-check_lib_or_exit(
-    lib      => 'uuid',
-    header   => 'uuid/uuid.h',
-    function => qq/
-        uuid_t u;
+        int i;
         char s[37];
+        uuid_t u,uu;
         uuid_generate(u);
+        uuid_generate_random(u);
+        uuid_generate_time(u);
         uuid_unparse(u,s);
-        return 0;
-    /,
-);
-
-check_lib_or_exit(
-    lib      => 'uuid',
-    header   => 'uuid/uuid.h',
-    function => qq/
-        uuid_t u;
-        char s[37] = "00000000-0000-0000-0000-000000000000";
+        uuid_unparse_lower(u,s);
+        uuid_unparse_upper(u,s);
         uuid_parse(s,u);
+        uuid_clear(u);
+        uuid_copy(uu,u);
+        i = uuid_compare(u,uu);
+        i = uuid_is_null(u);
         return 0;
     /,
 );

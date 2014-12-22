@@ -4,13 +4,23 @@ NAME
 SYNOPSIS
         use UUID ':all';
 
-        generate($uuid);             # generates a 128 bit uuid
+        generate($uuid);               # generate binary UUID, prefer random
+        generate_random($uuid);        # generate binary UUID, using random
+        generate_time($uuid);          # generate binary UUID, using time
 
-        unparse($uuid, $string);     # change $uuid to 36 byte string
+        $string = uuid();              # generate stringified UUID
 
-        $rc = parse($string, $uuid); # map string to UUID, return -1 on error
+        unparse($uuid, $string);       # change $uuid string
+        unparse_lower($uuid, $string); # change $uuid to lowercase string
+        unparse_upper($uuid, $string); # change $uuid to uppercase string
 
-        $string = uuid();            # generate new UUID, return string only
+        $rc = parse($string, $uuid);   # map string to UUID, return -1 on error
+
+        copy($dst, $src);              # copy binary UUID from $src to $dst
+        compare($uuid1, $uuid2);       # compare binary UUIDs
+
+        clear( $uuid );                # set binary UUID to NULL
+        is_null( $uuid);               # compare binary UUID to NULL
 
 DESCRIPTION
     The UUID library is used to generate unique identifiers for objects that
@@ -43,7 +53,7 @@ FUNCTIONS
     The binary format is simply a packed 16 byte binary value.
 
   generate( $uuid )
-    Creates a new binary UUID based on high quality randomness from
+    Generates a new binary UUID based on high quality randomness from
     /dev/urandom, if available.
 
     Alternately, the current time, the local ethernet MAC address (if
@@ -52,12 +62,40 @@ FUNCTIONS
 
     The previous content of $uuid, if any, is lost.
 
+  generate_random( $uuid )
+    Generates a new binary UUID but forces the use of the all-random
+    algorithm, even if a high-quality random number generator (i.e.,
+    /dev/urandom) is not available, in which case a pseudo-random
+    generator is used.
+
+    Note that the use of a pseudo-random generator may compromise the
+    uniqueness of UUIDs generated in this fashion.
+
+  generate_time( $uuid )
+    Generates a new binary UUID but forces the use of the alternative
+    algorithm which uses the current time and the local ethernet MAC address
+    (if available).
+
+    This algorithm used to be the default one used to generate UUIDs, but
+    because of the use of the ethernet MAC address, it can leak information
+    about when and where the UUID was generated.
+
+    This can cause privacy problems in some applications, so the generate()
+    function only uses this algorithm if a high-quality source of randomness
+    is not available.
+
   unparse( $uuid, $string )
     Converts the binary UUID in $uuid to string format and returns in
     $string. The previous content of $string, if any, is lost.
 
     The case of the hex digits returned may be upper or lower case, and is
     dependent on the system-dependent local default.
+
+  unparse_lower( $uuid, $string )
+    Same as unparse() but $string is forced to lower case.
+
+  unparse_upper( $uuid, $string )
+    Same as unparse() but $string is forced to upper case.
 
   $rc = parse( $string, $uuid )
     Converts the string format UUID in $string to binary and returns in
@@ -66,38 +104,54 @@ FUNCTIONS
     Returns 0 on success and -1 on failure. Additionally on failure, the
     content of $uuid is unchanged.
 
+  clear( $uuid )
+    Sets $uuid equal to the value of the NULL UUID.
+
+  is_null( $uuid )
+    Compares the value of $uuid to the NULL UUID.
+
+    Returns 1 if NULL, and 0 otherwise.
+
+  copy( $dst, $src )
+    Copies the binary $src UUID to $dst.
+
+    If $src isn't a UUID, $dst is set to the NULL UUID.
+
+  compare( $uuid1, $uuid2 )
+    Compares two binary UUIDs.
+
+    Returns an integer less than, equal to, or greater than zero if $uuid1
+    is less than, equal to, or greater than $uuid2.
+
+    However, if either operand is not a UUID, falls back to a simple string
+    comparison returning similar values.
+
   $string = uuid()
     Creates a new string format UUID and returns it in a more Perlish way.
 
-    Functionally the equivalent of calling generate and then unparse, but
-    throwing away the intermediate binary UUID.
+    Functionally the equivalent of calling generate() and then unparse(),
+    but throwing away the intermediate binary UUID.
 
 EXPORTS
-    The following functions are exported only by request.
-
-        generate
-        unparse
-        parse
-        uuid
-
-    All the functions may be imported using the ":all" tag.
+    All functions may be imported in the usual manner, either individually
+    or all at once using the ":all" tag.
 
 TODO
     Expose the rest of libuuid.
 
         Status  Function
         ------  --------
-        .       void uuid_clear(uuid_t uu);
-        .       int uuid_compare(const uuid_t uu1, const uuid_t uu2);
-        .       void uuid_copy(uuid_t dst, const uuid_t src);
+        !       void uuid_clear(uuid_t uu);
+        !       int uuid_compare(const uuid_t uu1, const uuid_t uu2);
+        !       void uuid_copy(uuid_t dst, const uuid_t src);
         !       void uuid_generate(uuid_t out);
-        .       void uuid_generate_random(uuid_t out);
-        .       void uuid_generate_time(uuid_t out);
-        .       int uuid_is_null(const uuid_t uu);
+        !       void uuid_generate_random(uuid_t out);
+        !       void uuid_generate_time(uuid_t out);
+        !       int uuid_is_null(const uuid_t uu);
         !       int uuid_parse(const char *in, uuid_t uu);
-        .       void uuid_unparse(const uuid_t uu, char *out);
-        .       void uuid_unparse_lower(const uuid_t uu, char *out);
-        .       void uuid_unparse_upper(const uuid_t uu, char *out);
+        !       void uuid_unparse(const uuid_t uu, char *out);
+        !       void uuid_unparse_lower(const uuid_t uu, char *out);
+        !       void uuid_unparse_upper(const uuid_t uu, char *out);
         .       time_t uuid_time(const uuid_t uu, struct timeval *ret_tv);
         ?       int uuid_type(const uuid_t uu);
         ?       int uuid_variant(const uuid_t uu);
@@ -140,5 +194,6 @@ AUTHOR
       Lukas Zapletal <lzap@cpan.org>
 
 SEE ALSO
-    uuid_generate(3), uuid_parse(3), uuid_unparse(3), perl(1).
+    uuid(3), uuid_clear(3), uuid_compare(3), uuid_copy(3), uuid_generate(3),
+    uuid_is_null(3), uuid_parse(3), uuid_unparse(3), perl(1).
 

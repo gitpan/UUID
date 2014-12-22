@@ -14,11 +14,16 @@ use vars qw(@ISA %EXPORT_TAGS @EXPORT_OK $VERSION);
 # If you do not need this, moving things directly into @EXPORT or @EXPORT_OK
 # will save memory.
 
-%EXPORT_TAGS = ( 'all' => [qw(&generate &parse &unparse &uuid)] );
+%EXPORT_TAGS = (
+    'all' => [qw(
+        &clear &compare &copy &generate &generate_random &generate_time
+        &is_null &parse &unparse &unparse_lower &unparse_upper &uuid
+    )],
+);
 
 @EXPORT_OK = ( @{$EXPORT_TAGS{'all'}} );
 
-$VERSION = '0.09';
+$VERSION = '0.10';
 
 bootstrap UUID $VERSION;
 
@@ -35,13 +40,24 @@ UUID - DCE compatible Universally Unique Identifier library for Perl
 
     use UUID ':all';
 
-    generate($uuid);             # generates a 128 bit uuid
+    generate($uuid);               # generate binary UUID, prefer random
+    generate_random($uuid);        # generate binary UUID, using random
+    generate_time($uuid);          # generate binary UUID, using time
 
-    unparse($uuid, $string);     # change $uuid to 36 byte string
+    $string = uuid();              # generate stringified UUID
 
-    $rc = parse($string, $uuid); # map string to UUID, return -1 on error
+    unparse($uuid, $string);       # change $uuid string
+    unparse_lower($uuid, $string); # change $uuid to lowercase string
+    unparse_upper($uuid, $string); # change $uuid to uppercase string
 
-    $string = uuid();            # generate new UUID, return string only
+    $rc = parse($string, $uuid);   # map string to UUID, return -1 on error
+
+    copy($dst, $src);              # copy binary UUID from $src to $dst
+    compare($uuid1, $uuid2);       # compare binary UUIDs
+
+    clear( $uuid );                # set binary UUID to NULL
+    is_null( $uuid);               # compare binary UUID to NULL
+    
 
 =head1 DESCRIPTION
 
@@ -57,7 +73,7 @@ Environment (DCE) utility uuidgen.
 
 =head1 FUNCTIONS
 
-Most of the UUID functions expose the underlying libuuid C interface
+Most of the UUID functions expose the underlying I<libuuid> C interface
 rather directly. That is, many return their values in their parameters
 and nothing else.
 
@@ -77,14 +93,38 @@ The binary format is simply a packed 16 byte binary value.
 
 =head2 B<generate(> I<$uuid> B<)>
 
-Creates a new binary UUID based on high quality randomness from
-/dev/urandom, if available.
+Generates a new binary UUID based on high quality randomness from
+I</dev/urandom>, if available.
 
 Alternately, the current time, the local ethernet MAC address (if
 available), and random data generated using a pseudo-random generator
 are used.
 
 The previous content of I<$uuid>, if any, is lost.
+
+=head2 B<generate_random(> I<$uuid> B<)>
+
+Generates a new binary UUID but forces the use of the all-random
+algorithm, even if a high-quality random number generator (i.e.,
+I</dev/urandom>) is not available, in which case a pseudo-random
+generator is used.
+
+Note that the use of a pseudo-random generator may compromise the
+uniqueness of UUIDs generated in this fashion.
+
+=head2 B<generate_time(> I<$uuid> B<)>
+
+Generates a new binary UUID but forces the use of the alternative
+algorithm which uses the current time and the local ethernet MAC address
+(if available).
+
+This algorithm used to be the default one used to generate UUIDs, but
+because of the use of the ethernet MAC address, it can leak information
+about when and where the UUID was generated.
+
+This can cause privacy problems in some applications, so the B<generate()>
+function only uses this algorithm if a high-quality source of randomness
+is not available.
 
 =head2 B<unparse(> I<$uuid>B<,> I<$string> B<)>
 
@@ -94,6 +134,14 @@ I<$string>. The previous content of I<$string>, if any, is lost.
 The case of the hex digits returned may be upper or lower case, and is
 dependent on the system-dependent local default.
 
+=head2 B<unparse_lower(> I<$uuid>B<,> I<$string> B<)>
+
+Same as B<unparse()> but I<$string> is forced to lower case.
+
+=head2 B<unparse_upper(> I<$uuid>B<,> I<$string> B<)>
+
+Same as B<unparse()> but I<$string> is forced to upper case.
+
 =head2 B<$rc = parse(> I<$string>B<,> I<$uuid> B<)>
 
 Converts the string format UUID in I<$string> to binary and returns in
@@ -102,41 +150,61 @@ I<$uuid>. The previous content of I<$uuid>, if any, is lost.
 Returns 0 on success and -1 on failure. Additionally on failure, the
 content of I<$uuid> is unchanged.
 
+=head2 B<clear(> I<$uuid> B<)>
+
+Sets I<$uuid> equal to the value of the NULL UUID.
+
+=head2 B<is_null(> I<$uuid> B<)>
+
+Compares the value of I<$uuid> to the NULL UUID.
+
+Returns 1 if NULL, and 0 otherwise.
+
+=head2 B<copy(> I<$dst>B<,> I<$src> B<)>
+
+Copies the binary I<$src> UUID to I<$dst>.
+
+If I<$src> isn't a UUID, I<$dst> is set to the NULL UUID.
+
+=head2 B<compare(> I<$uuid1>B<,> I<$uuid2> B<)>
+
+Compares two binary UUIDs.
+
+Returns an integer less than, equal to, or greater than zero if
+I<$uuid1> is less than, equal to, or greater than I<$uuid2>.
+
+However, if either operand is not a UUID, falls back to a simple string
+comparison returning similar values.
+
 =head2 B<>I<$string> B<= uuid()>
 
 Creates a new string format UUID and returns it in a more Perlish way.
 
-Functionally the equivalent of calling B<generate> and then B<unparse>, but
+Functionally the equivalent of calling B<generate()> and then B<unparse()>, but
 throwing away the intermediate binary UUID.
 
 =head1 EXPORTS
 
-The following functions are exported only by request.
-
-    generate
-    unparse
-    parse
-    uuid
-
-All the functions may be imported using the ":all" tag.
+All functions may be imported in the usual manner, either individually
+or all at once using the "I<:all>" tag.
 
 =head1 TODO
 
-Expose the rest of libuuid.
+Expose the rest of I<libuuid>.
 
     Status  Function
     ------  --------
-    .       void uuid_clear(uuid_t uu);
-    .       int uuid_compare(const uuid_t uu1, const uuid_t uu2);
-    .       void uuid_copy(uuid_t dst, const uuid_t src);
+    !       void uuid_clear(uuid_t uu);
+    !       int uuid_compare(const uuid_t uu1, const uuid_t uu2);
+    !       void uuid_copy(uuid_t dst, const uuid_t src);
     !       void uuid_generate(uuid_t out);
-    .       void uuid_generate_random(uuid_t out);
-    .       void uuid_generate_time(uuid_t out);
-    .       int uuid_is_null(const uuid_t uu);
+    !       void uuid_generate_random(uuid_t out);
+    !       void uuid_generate_time(uuid_t out);
+    !       int uuid_is_null(const uuid_t uu);
     !       int uuid_parse(const char *in, uuid_t uu);
-    .       void uuid_unparse(const uuid_t uu, char *out);
-    .       void uuid_unparse_lower(const uuid_t uu, char *out);
-    .       void uuid_unparse_upper(const uuid_t uu, char *out);
+    !       void uuid_unparse(const uuid_t uu, char *out);
+    !       void uuid_unparse_lower(const uuid_t uu, char *out);
+    !       void uuid_unparse_upper(const uuid_t uu, char *out);
     .       time_t uuid_time(const uuid_t uu, struct timeval *ret_tv);
     ?       int uuid_type(const uuid_t uu);
     ?       int uuid_variant(const uuid_t uu);
@@ -183,7 +251,9 @@ Authors and/or previous maintainers:
 
 =head1 SEE ALSO
 
-uuid_generate(3), uuid_parse(3), uuid_unparse(3), perl(1).
+B<uuid(3)>, B<uuid_clear(3)>, B<uuid_compare(3)>, B<uuid_copy(3)>,
+B<uuid_generate(3)>, B<uuid_is_null(3)>, B<uuid_parse(3)>,
+B<uuid_unparse(3)>, B<perl(1)>.
 
 =cut
 
