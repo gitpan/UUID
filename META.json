@@ -1,5 +1,5 @@
 {
-   "abstract" : "Perl extension for using UUID interfaces as defined in e2fsprogs.",
+   "abstract" : "DCE compatible Universally Unique Identifier library for Perl",
    "author" : [
       "Rick Myers <jrm@cpan.org>"
    ],
@@ -22,7 +22,8 @@
    "prereqs" : {
       "build" : {
          "requires" : {
-            "ExtUtils::MakeMaker" : "0"
+            "ExtUtils::MakeMaker" : "0",
+            "Test" : "0"
          }
       },
       "configure" : {
@@ -37,5 +38,5 @@
       }
    },
    "release_status" : "stable",
-   "version" : "0.08"
+   "version" : "0.09"
 }

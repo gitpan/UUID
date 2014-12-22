@@ -12,7 +12,7 @@ void do_generate(SV *str)
 {
     uuid_t uuid;
     uuid_generate( uuid );
-    sv_setpvn(str, uuid, sizeof(uuid));
+    sv_setpvn(str, (char*)uuid, sizeof(uuid));
 }
 
 void do_unparse(SV *in, SV * out) 
@@ -20,7 +20,7 @@ void do_unparse(SV *in, SV * out)
     uuid_t uuid;
     char str[37];
 
-    uuid_unparse(SvPV_nolen(in), str);
+    uuid_unparse((unsigned char*)SvPV_nolen(in), str);
     sv_setpvn(out, str, 36);
 }
 
@@ -32,7 +32,7 @@ int do_parse(SV *in, SV * out)
 
     rc = uuid_parse(SvPV_nolen(in), uuid);
     if (!rc) { 
-        sv_setpvn(out, uuid, sizeof(uuid));
+        sv_setpvn(out, (char*)uuid, sizeof(uuid));
     }
     return rc;
 }

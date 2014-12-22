@@ -38,18 +38,21 @@ check_lib_or_exit(
 );
 
 WriteMakefile1(
-    'NAME'             => 'UUID',
-    'AUTHOR'           => 'Rick Myers <jrm@cpan.org>',
-    'VERSION_FROM'     => 'UUID.pm',
-    'ABSTRACT_FROM'    => 'UUID.pm',
-    'LICENSE'          => 'artistic_2',
-    'MIN_PERL_VERSION' => '5.005',
-    'PREREQ_PM'        => {}, # e.g., Module::Name => 1.1
-    'LIBS'             => [ '-luuid' ],
-    'DEFINE'           => '', # e.g., '-DHAVE_SOMETHING'
-    'INC'              => '', # e.g., '-I/usr/include/other'
+    'NAME'               => 'UUID',
+    'AUTHOR'             => 'Rick Myers <jrm@cpan.org>',
+    'VERSION_FROM'       => 'UUID.pm',
+    'ABSTRACT_FROM'      => 'UUID.pm',
+    'LICENSE'            => 'artistic_2',
+    'MIN_PERL_VERSION'   => '5.005',
+    'PREREQ_PM'          => {}, # e.g., Module::Name => 1.1
+    'LIBS'               => [ '-luuid' ],
+    'DEFINE'             => '', # e.g., '-DHAVE_SOMETHING'
+    'INC'                => '', # e.g., '-I/usr/include/other'
     'CONFIGURE_REQUIRES' => {
         'Devel::CheckLib' => 0,
+    },
+    'TEST_REQUIRES' => {
+        'Test' => 0,
     },
     #'META_MERGE'       => {
     #    'resources' => {
@@ -81,5 +84,15 @@ sub WriteMakefile1 {  #Written by Alexandr Ciornii, version 0.21. Added by eumm-
     delete $params{BINARY_LOCATION} if $] < 5.005;
 
     WriteMakefile(%params);
+}
+
+# stay calm. don't blink.
+# this is just for me :-)
+sub MY::postamble {
+    return <<EOP;
+readme:
+	pod2text UUID.pm README
+	perl -i -pe's{\\*(\\S+)\\*}{\\1}g' README
+EOP
 }
 
