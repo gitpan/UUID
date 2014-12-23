@@ -137,37 +137,44 @@ EXPORTS
     or all at once using the ":all" tag.
 
 TODO
-    Expose the rest of libuuid.
+    General observations:
 
-        Status  Function
-        ------  --------
-        !       void uuid_clear(uuid_t uu);
-        !       int uuid_compare(const uuid_t uu1, const uuid_t uu2);
-        !       void uuid_copy(uuid_t dst, const uuid_t src);
-        !       void uuid_generate(uuid_t out);
-        !       void uuid_generate_random(uuid_t out);
-        !       void uuid_generate_time(uuid_t out);
-        !       int uuid_is_null(const uuid_t uu);
-        !       int uuid_parse(const char *in, uuid_t uu);
-        !       void uuid_unparse(const uuid_t uu, char *out);
-        !       void uuid_unparse_lower(const uuid_t uu, char *out);
-        !       void uuid_unparse_upper(const uuid_t uu, char *out);
-        .       time_t uuid_time(const uuid_t uu, struct timeval *ret_tv);
-        ?       int uuid_type(const uuid_t uu);
-        ?       int uuid_variant(const uuid_t uu);
+    *   On MacOS, uuid_unparse() and friends takes a uuid_string_t instead
+        of char*.
 
-        Status  Constant
-        ------  --------
-        ?       UUID_VARIANT_NCS
-        ?       UUID_VARIANT_DCE
-        ?       UUID_VARIANT_MICROSOFT
-        ?       UUID_VARIANT_OTHER
-        ?       UUID_TYPE_DCE_TIME
-        ?       UUID_TYPE_DCE_RANDOM
+    Checklist:
 
-        . - todo.
-        ! - done!
-        ? - why?
+    *   Expose the rest of libuuid.
+
+            Status  Function
+            ------  --------
+            !       void uuid_clear(uuid_t uu);
+            !       int uuid_compare(const uuid_t uu1, const uuid_t uu2);
+            !       void uuid_copy(uuid_t dst, const uuid_t src);
+            !       void uuid_generate(uuid_t out);
+            !       void uuid_generate_random(uuid_t out);
+            !       void uuid_generate_time(uuid_t out);
+            !       int uuid_is_null(const uuid_t uu);
+            !       int uuid_parse(const char *in, uuid_t uu);
+            !       void uuid_unparse(const uuid_t uu, char *out);
+            !       void uuid_unparse_lower(const uuid_t uu, char *out);
+            !       void uuid_unparse_upper(const uuid_t uu, char *out);
+            .       time_t uuid_time(const uuid_t uu, struct timeval *ret_tv);
+            ?       int uuid_type(const uuid_t uu);
+            ?       int uuid_variant(const uuid_t uu);
+
+            Status  Constant
+            ------  --------
+            ?       UUID_VARIANT_NCS
+            ?       UUID_VARIANT_DCE
+            ?       UUID_VARIANT_MICROSOFT
+            ?       UUID_VARIANT_OTHER
+            ?       UUID_TYPE_DCE_TIME
+            ?       UUID_TYPE_DCE_RANDOM
+
+            . - todo.
+            ! - done!
+            ? - why?
 
 COPYRIGHT AND LICENSE
     This software is Copyright (c) 2014 by Rick Myers.
@@ -185,13 +192,13 @@ AUTHOR
 
     Authors and/or previous maintainers:
 
+      Lukas Zapletal <lzap@cpan.org>
+
       Joseph N. Hall <joseph.nathan.hall@gmail.com>
 
       Colin Faber <cfaber@clusterfs.com>
 
       Peter J. Braam <braam@mountainviewdata.com>
-
-      Lukas Zapletal <lzap@cpan.org>
 
 SEE ALSO
     uuid(3), uuid_clear(3), uuid_compare(3), uuid_copy(3), uuid_generate(3),

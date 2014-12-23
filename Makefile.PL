@@ -5,8 +5,14 @@ use Devel::CheckLib;
 use ExtUtils::MakeMaker;
 
 check_lib_or_exit(
+    lib   => 'uuid',
+    #debug => 1,
+);
+
+assert_lib(
     lib      => 'uuid',
     header   => 'uuid/uuid.h',
+    debug    => 1,
     function => qq/
         int i;
         char s[37];

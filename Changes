@@ -1,5 +1,13 @@
 Revision history for Perl extension UUID.
 
+0.11 Mon Dec 22 19:03:09 EST 2014
+  - Looks like I've managed to cut the failure reports down a little TOO
+    far, so now splitting the search for -luuid into two separate
+    phases. The first, which I don't want to deal with right now, tests
+    for usability of the -luuid flag by itself. The second, tests for
+    usability of individual functions. We'll deal with platforms that
+    actually find libuuid first, then MAYBE revisit others.
+
 0.10 Mon Dec 22 11:55:30 EST 2014
   - Added clear() and is_null()
   - Added copy() and compare()

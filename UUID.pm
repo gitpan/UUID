@@ -23,7 +23,7 @@ use vars qw(@ISA %EXPORT_TAGS @EXPORT_OK $VERSION);
 
 @EXPORT_OK = ( @{$EXPORT_TAGS{'all'}} );
 
-$VERSION = '0.10';
+$VERSION = '0.11';
 
 bootstrap UUID $VERSION;
 
@@ -190,6 +190,23 @@ or all at once using the "I<:all>" tag.
 
 =head1 TODO
 
+General observations:
+
+=over
+
+=item *
+
+On MacOS, uuid_unparse() and friends takes a uuid_string_t instead of
+char*.
+
+=back
+
+Checklist:
+
+=over
+
+=item *
+
 Expose the rest of I<libuuid>.
 
     Status  Function
@@ -222,6 +239,7 @@ Expose the rest of I<libuuid>.
     ! - done!
     ? - why?
 
+=back
 
 =head1 COPYRIGHT AND LICENSE
 
@@ -241,13 +259,13 @@ Current maintainer:
 
 Authors and/or previous maintainers:
 
+  Lukas Zapletal <lzap@cpan.org>
+
   Joseph N. Hall <joseph.nathan.hall@gmail.com>
 
   Colin Faber <cfaber@clusterfs.com>
 
   Peter J. Braam <braam@mountainviewdata.com>
-
-  Lukas Zapletal <lzap@cpan.org>
 
 =head1 SEE ALSO
 
