@@ -60,8 +60,8 @@ ok abs(UUID::compare( $bin2, $bin1 )), 1;
 UUID::generate( $uuid ); # this is wrong, but dont fix it until after we figure out the segfault in macos
 ok 1;                                   # for mac/os
 $bin2 = '1234567890123456';
-ok 1;                                   # for mac/os
-$tmp1 = UUID::compare( $bin1, $bin2 );  # for mac/ox
+ok 1;                                   # for mac/os (pass)
+$tmp1 = UUID::compare( $bin1, $bin2 );  # for mac/ox (segfault)
 ok 1;                                   # for mac/os
 $tmp2 = -UUID::compare( $bin2, $bin1 ); # for mac/ox
 ok $tmp1, $tmp2;                        # for mac/ox

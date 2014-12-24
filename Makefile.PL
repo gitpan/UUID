@@ -21,7 +21,7 @@ check_lib_or_exit(
 warn "#\n";
 
 
-my $header;
+my @hfiles;
 for my $try (qw{ uuid/uuid.h uuid.h Rpc.h }) {
     warn "# ===> Checking for $try\n";
     eval { assert_lib(
@@ -29,20 +29,33 @@ for my $try (qw{ uuid/uuid.h uuid.h Rpc.h }) {
         header   => $try,
         debug    => 1,
     )};
-    $header = $try unless $@;
+    push @hfiles, $try unless $@;
     warn "#\n";
     last unless $@;
 }
-die "No header file found. Can't continue.\n" unless $header;
+
+die "No header file found. Can't continue.\n" unless @hfiles;
 
 
+my $header;
+my $defs = [];
 my $libs = ['-luuid'];
 
-if ( $header eq 'uuid.h' ) {
-    warn "# ===> Checking for functions in $header\n";
-    assert_lib(
+while ( $header = shift @hfiles ) {
+    try_e2fs( $header ) and last;
+    try_rpc(  $header ) and last;
+    try_win(  $header ) and last;
+}
+
+die "No interface found. Can't continue.\n" unless $header;
+
+
+sub try_rpc {
+    my $hdr = shift;
+    warn "# ===> Checking for RPC interface in $hdr\n";
+    eval { assert_lib(
         lib      => 'uuid',
-        header   => $header,
+        header   => $hdr,
         debug    => 1,
         function => qq/
             char str[37];
@@ -57,13 +70,17 @@ if ( $header eq 'uuid.h' ) {
             r = uuid_is_nil(&u1,&s);
             return 0;
         /,
-    );
+    )};
+    return 0 if $@;
+    push @$defs, '-DPERL__UUID__RPC_INT';
     warn "#\n";
+    return 1;
 }
 
-elsif ( $header eq 'uuid/uuid.h' ) {
-    warn "# ===> Checking for functions in $header\n";
-    assert_lib(
+sub try_e2fs {
+    my $hdr = shift;
+    warn "# ===> Checking for e2fs interface in $hdr\n";
+    eval { assert_lib(
         lib      => 'uuid',
         header   => $header,
         debug    => 1,
@@ -84,14 +101,17 @@ elsif ( $header eq 'uuid/uuid.h' ) {
             i = uuid_is_null(u);
             return 0;
         /,
-    );
+    )};
+    return 0 if $@;
+    push @$defs, '-DPERL__UUID__E2FS_INT';
     warn "#\n";
+    return 1;
 }
 
-elsif ( $header eq 'Rpc.h' ) {
-    # *sigh* strawberry falls in here
-    warn "# ===> Checking for functions in $header\n";
-    assert_lib(
+sub try_win {
+    my $hdr = shift;
+    warn "# ===> Checking for Win interface in $hdr\n";
+    eval { assert_lib(
         lib      => 'rpcrt4',
         header   => $header,
         debug    => 1,
@@ -111,14 +131,20 @@ elsif ( $header eq 'Rpc.h' ) {
             st = UuidToString(&u,&s);
             return 0;
         /,
-    );
+    )};
+    return 0 if $@;
     # why unshift? dunno
     unshift @$libs, '-lrpcrt4';
+    push @$defs, '-DPERL__UUID__WIN_INT';
     warn "#\n";
+    return 1;
 }
+
 
 warn "# ===> Writing Makefile\n";
 ($header = '-DPERL__UUID__'. uc $header ) =~ y{/.}{__};
+push @$defs, $header;
+
 WriteMakefile1(
     'NAME'               => 'UUID',
     'AUTHOR'             => 'Rick Myers <jrm@cpan.org>',
@@ -127,7 +153,7 @@ WriteMakefile1(
     'LICENSE'            => 'artistic_2',
     'MIN_PERL_VERSION'   => '5.005',
     'LIBS'               => $libs,
-    'DEFINE'             => $header,
+    'DEFINE'             => join(' ', @$defs), #$header,
     'INC'                => '',
     'PREREQ_PM'          => {},
     'CONFIGURE_REQUIRES' => {

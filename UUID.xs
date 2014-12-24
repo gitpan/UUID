@@ -2,6 +2,7 @@
 #include "perl.h"
 #include "XSUB.h"
 
+
 #ifdef PERL__UUID__UUID_UUID_H
 #include <uuid/uuid.h>
 #elif PERL__UUID__UUID_H
@@ -10,50 +11,61 @@
 #include <Rpc.h>
 #endif
 
+
+/*
 #ifndef SvPV_nolen
 # define SvPV_nolen(sv) SvPV(sv, na)
 #endif
+*/
 
-#ifdef PERL__UUID__UUID_UUID_H
+
+/* this REALLY needs fixing */
+#define UUID_BUF_SZ() (37)
+
+#ifdef PERL__UUID__E2FS_INT
 #define UUID_T uuid_t
-#define SV2UUID(s) ((unsigned char*)SvPV_nolen(s))
 #define UUID2SV(u) ((char*)u)
-#elif PERL__UUID__UUID_H
+#define SV2UUID(s) ((unsigned char*)SvGROW(s, sizeof(uuid_t)+1))
+
+#elif PERL__UUID__RPC_INT
 #define UUID_T uuid_t
-#define SV2UUID(s) ((unsigned char*)SvPV_nolen(s))
 #define UUID2SV(u) ((char*)u)
-#elif PERL__UUID__RPC_H
+#define SV2UUID(s) ((unsigned char*)SvGROW(s, sizeof(uuid_t)+1))
+
+#elif PERL__UUID__WIN_INT
 #define UUID_T UUID
-#define SV2UUID(s) ((unsigned char*)SvPV_nolen(s))
 #define UUID2SV(u) ((char*)&u)
+#define SV2UUID(s) ((UUID*)SvGROW(s, sizeof(UUID)+1))
+
 #endif
+
+#define SV2STR(s)  (SvGROW(s, UUID_BUF_SZ()+1))
 
 
 void do_generate(SV *str) {
     UUID_T uuid;
-#ifdef PERL__UUID__UUID_UUID_H
+#ifdef PERL__UUID__E2FS_INT
     uuid_generate( uuid );
-#elif PERL__UUID__UUID_H
+#elif PERL__UUID__RPC_INT
     int32_t s;
     uuid_create(&uuid, &s);
-#elif PERL__UUID__RPC_H
+#elif PERL__UUID__WIN_INT
     RPC_STATUS st;
     st = UuidCreate(&uuid);
 #endif
-    sv_setpvn(str, UUID2SV(uuid), sizeof(UUID_T));
+    sv_setpvn(str, UUID2SV(uuid), sizeof(UUID_T)); /* safe with embedded nulls */
 }
 
 
 void do_generate_random(SV *str) {
     UUID_T uuid;
-#ifdef PERL__UUID__UUID_UUID_H
+#ifdef PERL__UUID__E2FS_INT
     uuid_generate_random( uuid );
-#elif PERL__UUID__UUID_H
+#elif PERL__UUID__RPC_INT
     int32_t s;
     uuid_create(&uuid, &s);
-#elif PERL__UUID__RPC_H
-    RPC_STATUS st;
-    st = UuidCreate(&uuid);
+#elif PERL__UUID__WIN_INT
+    UuidCreate(&uuid);
 #endif
     sv_setpvn(str, UUID2SV(uuid), sizeof(UUID_T));
 }
@@ -61,118 +73,125 @@ void do_generate_random(SV *str) {
 
 void do_generate_time(SV *str) {
     UUID_T uuid;
-#ifdef PERL__UUID__UUID_UUID_H
+#ifdef PERL__UUID__E2FS_INT
     uuid_generate_time( uuid );
-#elif PERL__UUID__UUID_H
+#elif PERL__UUID__RPC_INT
     int32_t s;
     uuid_create(&uuid, &s);
-#elif PERL__UUID__RPC_H
-    RPC_STATUS st;
-    st = UuidCreateSequential(&uuid);
+#elif PERL__UUID__WIN_INT
+    UuidCreateSequential(&uuid);
 #endif
     sv_setpvn(str, UUID2SV(uuid), sizeof(UUID_T));
 }
 
 
 void do_unparse(SV *in, SV * out) {
-#ifdef PERL__UUID__UUID_UUID_H
-    char str[37];
+#ifdef PERL__UUID__E2FS_INT
+    char str[UUID_BUF_SZ()];
     uuid_unparse(SV2UUID(in), str);
-    sv_setpvn(out, str, 36);
-#elif PERL__UUID__UUID_H
-    char str[37];
-    int32_t s;
-    /* this mallocs */
-    uuid_to_string(SV2UUID(in), &str, &s);
-    sv_setpvn(out, str, 36);
-    free(str);
-#elif PERL__UUID__RPC_H
+    sv_setpvn(out, str, UUID_BUF_SZ()-1);  /* auto size! */
+#elif PERL__UUID__RPC_INT
     char *str;
+    int32_t s;
+    uuid_to_string(SV2UUID(in), &str, &s); /* free str */
+    sv_setpvn(out, str, UUID_BUF_SIZ()-1);
+    free(str);
+#elif PERL__UUID__WIN_INT
+    RPC_CSTR str;
     RPC_STATUS st;
-    st = UuidToString((UUID*)SvPV_nolen(in), (RPC_CSTR)&str);
-    if(st != RPC_S_OK)
-        croak("Out of memory");
-    sv_setpvn(out, str, 36);
+    st = UuidToString(SV2UUID(in), &str); /* free str */
+    if( st != RPC_S_OK )
+        croak("UuidToString error: %i", st);
+    sv_setpvn(out, str, UUID_BUF_SIZ()-1);
+    RpcStringFree(&str);
 #endif
 }
 
 
 void do_unparse_lower(SV *in, SV * out) {
-#ifdef PERL__UUID__UUID_UUID_H
-    char str[37];
+#ifdef PERL__UUID__E2FS_INT
+    char str[UUID_BUF_SZ()];
     uuid_unparse_lower(SV2UUID(in), str);
-    sv_setpvn(out, str, 36);
-#elif PERL__UUID__UUID_H
-    char *p, str[37];
-    int32_t s;
-    /* this mallocs */
-    uuid_to_string(SV2UUID(in),&str,&s);
-    for(p=str; *p; ++p) *p = tolower(*p);
-    sv_setpvn(out, str, 36);
-    free(str);
-#elif PERL__UUID__RPC_H
+    sv_setpvn(out, str, UUID_BUF_SZ()-1);
+#elif PERL__UUID__RPC_INT
     char *p, *str;
-    RPC_STATUS st;
-    st = UuidToString((UUID*)SvPV_nolen(in), (RPC_CSTR)&str);
-    if(st != RPC_S_OK)
-        croak("Out of memory");
+    int32_t s;
+    uuid_to_string(SV2UUID(in), &str, &s); /* free str */
     for(p=str; *p; ++p) *p = tolower(*p);
-    sv_setpvn(out, str, 36);
+    sv_setpvn(out, str, UUID_BUF_SZ()-1);
+    free(str);
+#elif PERL__UUID__WIN_INT
+    char *p;
+    RPC_CSTR str;
+    RPC_STATUS st;
+    st = UuidToString(SV2UUID(in), &str); /* free str */
+    if( st != RPC_S_OK )
+        croak("UuidToString error: %i", st);
+    for(p=str; *p; ++p) *p = tolower(*p);
+    sv_setpvn(out, str, UUID_BUF_SZ()-1);
+    RpcStringFree(&str);
 #endif
 }
 
 
 void do_unparse_upper(SV *in, SV * out) {
-#ifdef PERL__UUID__UUID_UUID_H
-    char str[37];
+#ifdef PERL__UUID__E2FS_INT
+    char str[UUID_BUF_SZ()];
     uuid_unparse_upper(SV2UUID(in), str);
-    sv_setpvn(out, str, 36);
-#elif PERL__UUID__UUID_H
-    char *p, str[37];
-    int32_t s;
-    /* this mallocs */
-    uuid_to_string(SV2UUID(in),&str,&s);
-    for(p=str; *p; ++p) *p = toupper(*p);
-    sv_setpvn(out, str, 36);
-    free(str);
-#elif PERL__UUID__RPC_H
+    sv_setpvn(out, str, UUID_BUF_SZ()-1);
+#elif PERL__UUID__RPC_INT
     char *p, *str;
-    RPC_STATUS st;
-    st = UuidToString((UUID*)SvPV_nolen(in), (RPC_CSTR)&str);
-    if(st != RPC_S_OK)
-        croak("Out of memory");
+    int32_t s;
+    uuid_to_string(SV2UUID(in), &str, &s); /* free str */
     for(p=str; *p; ++p) *p = toupper(*p);
-    sv_setpvn(out, str, 36);
+    sv_setpvn(out, str, UUID_BUF_SZ()-1);
+    free(str);
+#elif PERL__UUID__WIN_INT
+    char *p;
+    RPC_CSTR str;
+    RPC_STATUS st;
+    st = UuidToString(SV2UUID(in), &str); /* free str */
+    if( st != RPC_S_OK )
+        croak("UuidToString error: %i", st);
+    for(p=str; *p; ++p) *p = toupper(*p);
+    sv_setpvn(out, str, UUID_BUF_SZ()-1);
+    RpcStringFree(&str);
 #endif
 }
 
 
 int do_parse(SV *in, SV * out) {
     UUID_T uuid;
-#ifdef PERL__UUID__UUID_UUID_H
+#ifdef PERL__UUID__E2FS_INT
     int rc;
-    rc = uuid_parse(SvPV_nolen(in), uuid);
-#elif PERL__UUID__UUID_H
-    int rc;
-    uuid_from_string(str,&uuid,&rc);
-#elif PERL__UUID__RPC_H
-    RPC_STATUS rc;
-    rc = UuidFromString(SvPV_nolen(in), &uuid);
-#endif
+    rc = uuid_parse(SV2STR(in), uuid);
     if( !rc )
         sv_setpvn(out, UUID2SV(uuid), sizeof(UUID_T));
     return rc;
+#elif PERL__UUID__RPC_INT
+    int rc;
+    uuid_from_string(str, &uuid, &rc);
+    if( !rc )
+        sv_setpvn(out, UUID2SV(uuid), sizeof(UUID_T));
+    return rc;
+#elif PERL__UUID__WIN_INT
+    RPC_STATUS rc;
+    rc = UuidFromString(SV2STR(in), &uuid);
+    if( rc == RPC_S_OK )
+        sv_setpvn(out, UUID2SV(uuid), sizeof(UUID_T));
+    return rc == RPC_S_OK ? 0 : -1;
+#endif
 }
 
 
 void do_clear(SV *in) {
     UUID_T uuid;
-#ifdef PERL__UUID__UUID_UUID_H
+#ifdef PERL__UUID__E2FS_INT
     uuid_clear(uuid);
-#elif PERL__UUID__UUID_H
+#elif PERL__UUID__RPC_INT
     int32_t s;
     uuid_create_nil(&uuid,&s);
-#elif PERL__UUID__RPC_H
+#elif PERL__UUID__WIN_INT
     UuidCreateNil(&uuid);
 #endif
     sv_setpvn(in, UUID2SV(uuid), sizeof(UUID_T));
@@ -180,33 +199,33 @@ void do_clear(SV *in) {
 
 
 int do_is_null(SV *in) {
-#ifdef PERL__UUID__UUID_UUID_H
+#ifdef PERL__UUID__E2FS_INT
     if( SvCUR(in) != sizeof(uuid_t) )
         return 0;
     return uuid_is_null(SV2UUID(in));
-#elif PERL__UUID__UUID_H
+#elif PERL__UUID__RPC_INT
     int32_t s;
     return uuid_is_nil(SV2UUID(in),&s);
-#elif PERL__UUID__RPC_H
+#elif PERL__UUID__WIN_INT
     int rc;
     RPC_STATUS st;
-    rc = UuidIsNil((UUID*)SvPV_nolen(in), &st);
+    rc = UuidIsNil(SV2UUID(in), &st);
     return rc == TRUE ? 1 : 0;
 #endif
 }
 
 
 int do_compare(SV *uu1, SV *uu2) {
-#ifdef PERL__UUID__UUID_UUID_H
+#ifdef PERL__UUID__E2FS_INT
     if( SvCUR(uu1) == sizeof(uuid_t) )
         if( SvCUR(uu2) == sizeof(uuid_t) )
             return uuid_compare(SV2UUID(uu1), SV2UUID(uu2));
-#elif PERL__UUID__UUID_H
+#elif PERL__UUID__RPC_INT
     int32_t s;
     if( SvCUR(uu1) == sizeof(uuid_t) )
         if( SvCUR(uu2) == sizeof(uuid_t) )
             return uuid_compare(SV2UUID(uu1), SV2UUID(uu2), &s);
-#elif PERL__UUID__RPC_H
+#elif PERL__UUID__WIN_INT
 #endif
     return sv_cmp(uu1, uu2);
 }
@@ -214,51 +233,55 @@ int do_compare(SV *uu1, SV *uu2) {
 
 void do_copy(SV *dst, SV *src) {
     UUID_T uuid;
-#ifdef PERL__UUID__UUID_UUID_H
+#ifdef PERL__UUID__E2FS_INT
     if( SvCUR(src) != sizeof(uuid_t) )
         uuid_clear(uuid);
     else
         uuid_copy(uuid, SV2UUID(src));
-#elif PERL__UUID__UUID_H
+#elif PERL__UUID__RPC_INT
     int32_t s;
     if( SvCUR(src) != sizeof(uuid_t) )
         uuid_create_nil(uuid, &s);
     else
         uuid_copy(uuid, SV2UUID(src), &s);
-#elif PERL__UUID__RPC_H
+#elif PERL__UUID__WIN_INT
     if( SvCUR(src) != sizeof(uuid_t) )
         UuidCreateNil(&uuid);
     else
-        memcpy(&uuid, SvPV_nolen(src), sizeof(UUID));
+        memcpy(&uuid, SV2UUID(src), sizeof(UUID));
 #endif
     sv_setpvn(dst, UUID2SV(uuid), sizeof(UUID_T));
 }
 
 
 SV* do_uuid() {
-    char str[37];
     UUID_T uuid;
-#ifdef PERL__UUID__UUID_UUID_H
+#ifdef PERL__UUID__E2FS_INT
+    char str[UUID_BUF_SZ()];
     uuid_generate(uuid);
     uuid_unparse(uuid, str);
-    return newSVpv(str, 36);
-#elif PERL__UUID__UUID_H
+    return newSVpvn(str, UUID_BUF_SZ()-1);
+#elif PERL__UUID__RPC_INT
+    SV *sv;
+    char str[UUID_BUF_SZ()];
     int32_t s;
-    SV *ss;
     uuid_create(&uuid, &s);
     /* this mallocs */
     uuid_to_string(&uuid, &str, &s);
-    ss = newSVpv(str, 36);
+    sv = newSVpvn(str, UUID_BUF_SZ()-1);
     free(str);
-    return ss;
-#elif PERL__UUID__RPC_H
-    char str[37];
+    return sv;
+#elif PERL__UUID__WIN_INT
+    SV *sv;
     PRC_STATUS st;
+    RPC_CSTR str;
     UuidCreateSequential(&uuid);
-    st = UuidToString(&uuid, (RPC_CSTR*)&str);
-    if( st != RPC_S_OK )
-        croak("Out of memory");
-    return newSVpv(str, 36);
+    st = UuidToString(&uuid, &str); /* free str */
+    if( st != RCP_S_OK )
+        croak("UuidToString error: %i", st);
+    sv = newSVpvn(str, UUID_BUF_SZ()-1);
+    RpcStringFree(&str);
+    return sv;
 #endif
 }
 

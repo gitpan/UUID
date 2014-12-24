@@ -1,5 +1,9 @@
 Revision history for Perl extension UUID.
 
+0.13 Wed Dec 24 07:45:49 EST 2014
+  - Split -luuid search into header file and interface type stages
+  - Removed SvPV_nolen everywhere (buffer overflows)
+
 0.12 Wed Dec 24 03:07:50 EST 2014
   - Added support for non-e2fs systems (BSD, OSX, Win)
 
