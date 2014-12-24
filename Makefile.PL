@@ -22,7 +22,7 @@ warn "#\n";
 
 
 my $header;
-for my $try (qw{ uuid/uuid.h uuid.h rpcdce.h }) {
+for my $try (qw{ uuid/uuid.h uuid.h Rpc.h }) {
     warn "# ===> Checking for $try\n";
     eval { assert_lib(
         lib      => 'uuid',
@@ -35,6 +35,8 @@ for my $try (qw{ uuid/uuid.h uuid.h rpcdce.h }) {
 }
 die "No header file found. Can't continue.\n" unless $header;
 
+
+my $libs = ['-luuid'];
 
 if ( $header eq 'uuid.h' ) {
     warn "# ===> Checking for functions in $header\n";
@@ -86,9 +88,33 @@ elsif ( $header eq 'uuid/uuid.h' ) {
     warn "#\n";
 }
 
-elsif ( $header eq 'rpcdce.h' ) {
+elsif ( $header eq 'Rpc.h' ) {
     # *sigh* strawberry falls in here
-    die "Platform unsupported: Windows\n";
+    warn "# ===> Checking for functions in $header\n";
+    assert_lib(
+        lib      => 'rpcrt4',
+        header   => $header,
+        debug    => 1,
+        function => qq/
+            int i;
+            UUID u,uu;
+            RPC_CSTR cs;
+            RPC_STATUS st;
+            unsigned char s[37];
+            i  = UuidCompare(&u,&uu,&st);
+            st = UuidCreate(&u);
+            st = UuidCreateNil(&uu);
+            st = UuidCreateSequential(&uu);
+            i  = UuidEqual(&u,&uu,&st);
+            st = UuidFromString(cs,&u);
+            i  = UuidIsNil(&u,&st);
+            st = UuidToString(&u,&s);
+            return 0;
+        /,
+    );
+    # why unshift? dunno
+    unshift @$libs, '-lrpcrt4';
+    warn "#\n";
 }
 
 warn "# ===> Writing Makefile\n";
@@ -100,9 +126,9 @@ WriteMakefile1(
     'ABSTRACT_FROM'      => 'UUID.pm',
     'LICENSE'            => 'artistic_2',
     'MIN_PERL_VERSION'   => '5.005',
-    'LIBS'               => [ '-luuid' ],
-    'DEFINE'             => $header, # e.g., '-DHAVE_SOMETHING'
-    'INC'                => "", # e.g., '-I/usr/include/other'
+    'LIBS'               => $libs,
+    'DEFINE'             => $header,
+    'INC'                => '',
     'PREREQ_PM'          => {},
     'CONFIGURE_REQUIRES' => {
         'Devel::CheckLib' => 0,

@@ -1,5 +1,5 @@
 use Test;
-BEGIN { plan tests => 32 }
+BEGIN { plan tests => 33 }
 use UUID;
 
 
@@ -13,6 +13,7 @@ UUID::generate_time( $bin );
 ok length $bin, 16;
 
 UUID::unparse( $bin, $str );
+ok $str, qr{^[-0-9a-f]+$}i;
 $rc = UUID::parse( $str, $bin2 );
 ok $rc, 0;
 ok $bin, $bin2;

@@ -23,7 +23,7 @@ use vars qw(@ISA %EXPORT_TAGS @EXPORT_OK $VERSION);
 
 @EXPORT_OK = ( @{$EXPORT_TAGS{'all'}} );
 
-$VERSION = '0.11_01';
+$VERSION = '0.12';
 
 bootstrap UUID $VERSION;
 
@@ -190,72 +190,7 @@ or all at once using the "I<:all>" tag.
 
 =head1 TODO
 
-General observations:
-
-=over
-
-MacOSX and FreeBSD, at least, implement a different libuuid interface,
-namely the OpenGroup interface.
-
-http://www.opengroup.org/dce/info/draft-leach-uuids-guids-01.txt
-
-On MacOS, uuid_unparse() and friends takes a uuid_string_t instead of
-char*.
-
-At least on some MacOS, uuid_compare() takes 3 arguements instead of 2.
-
-=item *
-
-Apparently libuuid is broken on Windows platforms. At least the native
-Windows libuuid is anyway.
-
-http://cygwin.com/ml/cygwin/2014-03/msg00522.html
-
-On that same note, Cygwin broke recently when they switched to disabling
-static libraries by default. Cygwin users should link with -luuid, which
-should create a dependancy on the libuuidl package.
-
-=back
-
-Checklist:
-
-=over
-
-=item *
-
-Expose the rest of I<libuuid>.
-
-    Status  Function
-    ------  --------
-    !       void uuid_clear(uuid_t uu);
-    !       int uuid_compare(const uuid_t uu1, const uuid_t uu2);
-    !       void uuid_copy(uuid_t dst, const uuid_t src);
-    !       void uuid_generate(uuid_t out);
-    !       void uuid_generate_random(uuid_t out);
-    !       void uuid_generate_time(uuid_t out);
-    !       int uuid_is_null(const uuid_t uu);
-    !       int uuid_parse(const char *in, uuid_t uu);
-    !       void uuid_unparse(const uuid_t uu, char *out);
-    !       void uuid_unparse_lower(const uuid_t uu, char *out);
-    !       void uuid_unparse_upper(const uuid_t uu, char *out);
-    .       time_t uuid_time(const uuid_t uu, struct timeval *ret_tv);
-    ?       int uuid_type(const uuid_t uu);
-    ?       int uuid_variant(const uuid_t uu);
-
-    Status  Constant
-    ------  --------
-    ?       UUID_VARIANT_NCS
-    ?       UUID_VARIANT_DCE
-    ?       UUID_VARIANT_MICROSOFT
-    ?       UUID_VARIANT_OTHER
-    ?       UUID_TYPE_DCE_TIME
-    ?       UUID_TYPE_DCE_RANDOM
-
-    . - todo.
-    ! - done!
-    ? - why?
-
-=back
+Need more tests and sanity checks.
 
 =head1 COPYRIGHT AND LICENSE
 

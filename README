@@ -137,44 +137,7 @@ EXPORTS
     or all at once using the ":all" tag.
 
 TODO
-    General observations:
-
-    *   On MacOS, uuid_unparse() and friends takes a uuid_string_t instead
-        of char*.
-
-    Checklist:
-
-    *   Expose the rest of libuuid.
-
-            Status  Function
-            ------  --------
-            !       void uuid_clear(uuid_t uu);
-            !       int uuid_compare(const uuid_t uu1, const uuid_t uu2);
-            !       void uuid_copy(uuid_t dst, const uuid_t src);
-            !       void uuid_generate(uuid_t out);
-            !       void uuid_generate_random(uuid_t out);
-            !       void uuid_generate_time(uuid_t out);
-            !       int uuid_is_null(const uuid_t uu);
-            !       int uuid_parse(const char *in, uuid_t uu);
-            !       void uuid_unparse(const uuid_t uu, char *out);
-            !       void uuid_unparse_lower(const uuid_t uu, char *out);
-            !       void uuid_unparse_upper(const uuid_t uu, char *out);
-            .       time_t uuid_time(const uuid_t uu, struct timeval *ret_tv);
-            ?       int uuid_type(const uuid_t uu);
-            ?       int uuid_variant(const uuid_t uu);
-
-            Status  Constant
-            ------  --------
-            ?       UUID_VARIANT_NCS
-            ?       UUID_VARIANT_DCE
-            ?       UUID_VARIANT_MICROSOFT
-            ?       UUID_VARIANT_OTHER
-            ?       UUID_TYPE_DCE_TIME
-            ?       UUID_TYPE_DCE_RANDOM
-
-            . - todo.
-            ! - done!
-            ? - why?
+    Need more tests and sanity checks.
 
 COPYRIGHT AND LICENSE
     This software is Copyright (c) 2014 by Rick Myers.
