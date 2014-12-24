@@ -1,5 +1,5 @@
 use Test;
-BEGIN { plan tests => 28 }
+BEGIN { plan tests => 32 }
 use UUID;
 
 
@@ -56,8 +56,14 @@ ok abs(UUID::compare( $bin1, $bin2 )), 1;
 ok abs(UUID::compare( $bin2, $bin1 )), 1;
 
 # sane compare
-UUID::generate( $uuid1 );
+UUID::generate( $uuid ); # this is wrong, but dont fix it until after we figure out the segfault in macos
+ok 1;                                   # for mac/os
 $bin2 = '1234567890123456';
+ok 1;                                   # for mac/os
+$tmp1 = UUID::compare( $bin1, $bin2 );  # for mac/ox
+ok 1;                                   # for mac/os
+$tmp2 = -UUID::compare( $bin2, $bin1 ); # for mac/ox
+ok $tmp1, $tmp2;                        # for mac/ox
 ok UUID::compare( $bin1, $bin2 ), -UUID::compare( $bin2, $bin1 );
 $bin2 = $bin1;
 ok UUID::compare( $bin1, $bin2 ), 0;

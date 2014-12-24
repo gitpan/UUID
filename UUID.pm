@@ -23,7 +23,7 @@ use vars qw(@ISA %EXPORT_TAGS @EXPORT_OK $VERSION);
 
 @EXPORT_OK = ( @{$EXPORT_TAGS{'all'}} );
 
-$VERSION = '0.11';
+$VERSION = '0.11_01';
 
 bootstrap UUID $VERSION;
 
@@ -194,10 +194,26 @@ General observations:
 
 =over
 
-=item *
+MacOSX and FreeBSD, at least, implement a different libuuid interface,
+namely the OpenGroup interface.
+
+http://www.opengroup.org/dce/info/draft-leach-uuids-guids-01.txt
 
 On MacOS, uuid_unparse() and friends takes a uuid_string_t instead of
 char*.
+
+At least on some MacOS, uuid_compare() takes 3 arguements instead of 2.
+
+=item *
+
+Apparently libuuid is broken on Windows platforms. At least the native
+Windows libuuid is anyway.
+
+http://cygwin.com/ml/cygwin/2014-03/msg00522.html
+
+On that same note, Cygwin broke recently when they switched to disabling
+static libraries by default. Cygwin users should link with -luuid, which
+should create a dependancy on the libuuidl package.
 
 =back
 

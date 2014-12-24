@@ -4,34 +4,95 @@ use Config;
 use Devel::CheckLib;
 use ExtUtils::MakeMaker;
 
+
+# ARRRRR!.. there are _at_least_ 3 different UUID interfaces:
+# Free/NetBSD/MacOSX, Windows, and e2fsprogs.
+# ... this is gonna suck!
+warn "#\n";
+
+
+# if the compiler can't find it,
+# no sense wasting our time...
+warn "# ===> Checking for -luuid\n";
 check_lib_or_exit(
     lib   => 'uuid',
-    #debug => 1,
+    debug => 1,
 );
+warn "#\n";
 
-assert_lib(
-    lib      => 'uuid',
-    header   => 'uuid/uuid.h',
-    debug    => 1,
-    function => qq/
-        int i;
-        char s[37];
-        uuid_t u,uu;
-        uuid_generate(u);
-        uuid_generate_random(u);
-        uuid_generate_time(u);
-        uuid_unparse(u,s);
-        uuid_unparse_lower(u,s);
-        uuid_unparse_upper(u,s);
-        uuid_parse(s,u);
-        uuid_clear(u);
-        uuid_copy(uu,u);
-        i = uuid_compare(u,uu);
-        i = uuid_is_null(u);
-        return 0;
-    /,
-);
 
+my $header;
+for my $try (qw{ uuid/uuid.h uuid.h rpcdce.h }) {
+    warn "# ===> Checking for $try\n";
+    eval { assert_lib(
+        lib      => 'uuid',
+        header   => $try,
+        debug    => 1,
+    )};
+    $header = $try unless $@;
+    warn "#\n";
+    last unless $@;
+}
+die "No header file found. Can't continue.\n" unless $header;
+
+
+if ( $header eq 'uuid.h' ) {
+    warn "# ===> Checking for functions in $header\n";
+    assert_lib(
+        lib      => 'uuid',
+        header   => $header,
+        debug    => 1,
+        function => qq/
+            char str[37];
+            uuid_t u1,u2;
+            int32_t r,s;
+            uuid_create(&u1,&s);
+            uuid_create_nil(&u2,&s);
+            uuid_from_string(str,&u1,&s);
+            uuid_to_string(&u1,&str,&s);
+            r = uuid_compare(&u1,&u2,&s);
+            r = uuid_equal(&u1,&u2,&s);
+            r = uuid_is_nil(&u1,&s);
+            return 0;
+        /,
+    );
+    warn "#\n";
+}
+
+elsif ( $header eq 'uuid/uuid.h' ) {
+    warn "# ===> Checking for functions in $header\n";
+    assert_lib(
+        lib      => 'uuid',
+        header   => $header,
+        debug    => 1,
+        function => qq/
+            int i;
+            char s[37];
+            uuid_t u,uu;
+            uuid_generate(u);
+            uuid_generate_random(u);
+            uuid_generate_time(u);
+            uuid_unparse(u,s);
+            uuid_unparse_lower(u,s);
+            uuid_unparse_upper(u,s);
+            uuid_parse(s,u);
+            uuid_clear(u);
+            uuid_copy(uu,u);
+            i = uuid_compare(u,uu);
+            i = uuid_is_null(u);
+            return 0;
+        /,
+    );
+    warn "#\n";
+}
+
+elsif ( $header eq 'rpcdce.h' ) {
+    # *sigh* strawberry falls in here
+    die "Platform unsupported: Windows\n";
+}
+
+warn "# ===> Writing Makefile\n";
+($header = '-DPERL__UUID__'. uc $header ) =~ y{/.}{__};
 WriteMakefile1(
     'NAME'               => 'UUID',
     'AUTHOR'             => 'Rick Myers <jrm@cpan.org>',
@@ -39,10 +100,10 @@ WriteMakefile1(
     'ABSTRACT_FROM'      => 'UUID.pm',
     'LICENSE'            => 'artistic_2',
     'MIN_PERL_VERSION'   => '5.005',
-    'PREREQ_PM'          => {}, # e.g., Module::Name => 1.1
     'LIBS'               => [ '-luuid' ],
-    'DEFINE'             => '', # e.g., '-DHAVE_SOMETHING'
-    'INC'                => '', # e.g., '-I/usr/include/other'
+    'DEFINE'             => $header, # e.g., '-DHAVE_SOMETHING'
+    'INC'                => "", # e.g., '-I/usr/include/other'
+    'PREREQ_PM'          => {},
     'CONFIGURE_REQUIRES' => {
         'Devel::CheckLib' => 0,
     },

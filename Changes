@@ -1,5 +1,12 @@
 Revision history for Perl extension UUID.
 
+0.11_01 Tue Dec 23 20:23:29 EST 2014
+  - Modified test.pl to hopefully catch where MacOSX fails
+  - Heavy mods to Makefile.PL to differentiate between interfaces
+  - Makefile.PL *lots* more verbose
+  - Lots of #ifdefs added in XS
+  - First shot at code that works for BSD style interface
+
 0.11 Mon Dec 22 19:03:09 EST 2014
   - Looks like I've managed to cut the failure reports down a little TOO
     far, so now splitting the search for -luuid into two separate
