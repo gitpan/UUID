@@ -29,9 +29,11 @@ for my $try (qw{ uuid/uuid.h uuid.h Rpc.h }) {
         header   => $try,
         debug    => 1,
     )};
-    push @hfiles, $try unless $@;
+    unless ( $@ ) {
+        push @hfiles, $try;
+        warn "# ===> Found!\n";
+    }
     warn "#\n";
-    last unless $@;
 }
 
 die "No header file found. Can't continue.\n" unless @hfiles;
@@ -39,11 +41,11 @@ die "No header file found. Can't continue.\n" unless @hfiles;
 
 my $header;
 my $defs = [];
-my $libs = ['-luuid'];
+my $libs = [];
 
 while ( $header = shift @hfiles ) {
-    try_e2fs( $header ) and last;
     try_rpc(  $header ) and last;
+    try_e2fs( $header ) and last;
     try_win(  $header ) and last;
 }
 
@@ -71,8 +73,10 @@ sub try_rpc {
             return 0;
         /,
     )};
-    return 0 if $@;
+    if ($@) { my $L = length $@; warn "# ===> Err($L): \"$@\"\n"; return 0 }
     push @$defs, '-DPERL__UUID__RPC_INT';
+    push @$libs, '-luuid';
+    warn "# ===> Found!\n";
     warn "#\n";
     return 1;
 }
@@ -102,8 +106,10 @@ sub try_e2fs {
             return 0;
         /,
     )};
-    return 0 if $@;
+    if ($@) { my $L = length $@; warn "# ===> Err($L): \"$@\"\n"; return 0 }
     push @$defs, '-DPERL__UUID__E2FS_INT';
+    push @$libs, '-luuid';
+    warn "# ===> Found!\n";
     warn "#\n";
     return 1;
 }
@@ -132,13 +138,33 @@ sub try_win {
             return 0;
         /,
     )};
-    return 0 if $@;
-    # why unshift? dunno
-    unshift @$libs, '-lrpcrt4';
+    if ($@) { my $L = length $@; warn "# ===> Err($L): \"$@\"\n"; return 0 }
     push @$defs, '-DPERL__UUID__WIN_INT';
+    push @$libs, '-lrpcrt4';
+    warn "# ===> Found!\n";
     warn "#\n";
     return 1;
 }
+
+sub get_size {
+    my ( $hdrs, $libs ) = @_;
+    warn "# ===> Checking binary size\n";
+    ( my $lib = $libs->[0] ) =~ s/-l//;
+    check_lib(
+        lib      => $lib,
+        header   => $hdrs,
+        debug    => 1,
+        function => qq/
+            return sizeof(uuid_t);
+        /,
+    );
+    my $rv = $? >> 8;
+    warn "# ===> $rv\n";
+    warn "#\n";
+    return $rv;
+}
+
+my $size = get_size( $header, $libs );
 
 
 warn "# ===> Writing Makefile\n";

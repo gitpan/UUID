@@ -1,5 +1,10 @@
 Revision history for Perl extension UUID.
 
+0.14 Wed Dec 24 22:39:42 EST 2014
+  - Fix typo in Windows do_uuid() for compiler fail on strawberry
+  - Now checking for all header files instead of taking first
+  - Added more detail for failed interface search
+
 0.13 Wed Dec 24 07:45:49 EST 2014
   - Split -luuid search into header file and interface type stages
   - Removed SvPV_nolen everywhere (buffer overflows)

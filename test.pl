@@ -1,3 +1,4 @@
+use warnings;
 use Test;
 BEGIN { plan tests => 33 }
 use UUID;
@@ -57,12 +58,15 @@ ok abs(UUID::compare( $bin1, $bin2 )), 1;
 ok abs(UUID::compare( $bin2, $bin1 )), 1;
 
 # sane compare
+$uuid=1; #kill warning until we get osx sorted
 UUID::generate( $uuid ); # this is wrong, but dont fix it until after we figure out the segfault in macos
 ok 1;                                   # for mac/os
 $bin2 = '1234567890123456';
 ok 1;                                   # for mac/os (pass)
+#die; # 5.18.4 gets here (and all others)
 $tmp1 = UUID::compare( $bin1, $bin2 );  # for mac/ox (segfault)
 ok 1;                                   # for mac/os
+#die; # 5.20.1 gets here
 $tmp2 = -UUID::compare( $bin2, $bin1 ); # for mac/ox
 ok $tmp1, $tmp2;                        # for mac/ox
 ok UUID::compare( $bin1, $bin2 ), -UUID::compare( $bin2, $bin1 );

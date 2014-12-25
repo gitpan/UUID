@@ -53,7 +53,7 @@ void do_generate(SV *str) {
     RPC_STATUS st;
     st = UuidCreate(&uuid);
 #endif
-    sv_setpvn(str, UUID2SV(uuid), sizeof(UUID_T)); /* safe with embedded nulls */
+    sv_setpvn(str, UUID2SV(uuid), sizeof(UUID_T));
 }
 
 
@@ -89,7 +89,7 @@ void do_unparse(SV *in, SV * out) {
 #ifdef PERL__UUID__E2FS_INT
     char str[UUID_BUF_SZ()];
     uuid_unparse(SV2UUID(in), str);
-    sv_setpvn(out, str, UUID_BUF_SZ()-1);  /* auto size! */
+    sv_setpvn(out, str, UUID_BUF_SZ()-1);
 #elif PERL__UUID__RPC_INT
     char *str;
     int32_t s;
@@ -273,7 +273,7 @@ SV* do_uuid() {
     return sv;
 #elif PERL__UUID__WIN_INT
     SV *sv;
-    PRC_STATUS st;
+    RPC_STATUS st;
     RPC_CSTR str;
     UuidCreateSequential(&uuid);
     st = UuidToString(&uuid, &str); /* free str */

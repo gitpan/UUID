@@ -23,7 +23,7 @@ use vars qw(@ISA %EXPORT_TAGS @EXPORT_OK $VERSION);
 
 @EXPORT_OK = ( @{$EXPORT_TAGS{'all'}} );
 
-$VERSION = '0.13';
+$VERSION = '0.14';
 
 bootstrap UUID $VERSION;
 
