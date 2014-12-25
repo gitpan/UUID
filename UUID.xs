@@ -94,7 +94,7 @@ void do_unparse(SV *in, SV * out) {
     char *str;
     int32_t s;
     uuid_to_string(SV2UUID(in), &str, &s); /* free str */
-    sv_setpvn(out, str, UUID_BUF_SIZ()-1);
+    sv_setpvn(out, str, UUID_BUF_SZ()-1);
     free(str);
 #elif PERL__UUID__WIN_INT
     RPC_CSTR str;
@@ -102,7 +102,7 @@ void do_unparse(SV *in, SV * out) {
     st = UuidToString(SV2UUID(in), &str); /* free str */
     if( st != RPC_S_OK )
         croak("UuidToString error: %i", st);
-    sv_setpvn(out, str, UUID_BUF_SIZ()-1);
+    sv_setpvn(out, str, UUID_BUF_SZ()-1);
     RpcStringFree(&str);
 #endif
 }
@@ -221,10 +221,13 @@ int do_compare(SV *uu1, SV *uu2) {
         if( SvCUR(uu2) == sizeof(uuid_t) )
             return uuid_compare(SV2UUID(uu1), SV2UUID(uu2));
 #elif PERL__UUID__RPC_INT
+/* lets just compare sv's and see what we get (5.20.1 on osx) */
+/*
     int32_t s;
     if( SvCUR(uu1) == sizeof(uuid_t) )
         if( SvCUR(uu2) == sizeof(uuid_t) )
             return uuid_compare(SV2UUID(uu1), SV2UUID(uu2), &s);  /* need uuid_t* */
+*/
 #elif PERL__UUID__WIN_INT
 #endif
     return sv_cmp(uu1, uu2);

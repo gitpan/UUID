@@ -1,5 +1,9 @@
 Revision history for Perl extension UUID.
 
+0.16 Thu Dec 25 18:24:23 EST 2014
+  - Typo on Windows/BSD
+  - Trying sv_cmp() instead of uuid_compare() on RPC-based machines
+
 0.15 Thu Dec 25 05:55:13 EST 2014
   - REALLY fix do_uuid() typo. Really.
   - Fix pointer problems on BSD

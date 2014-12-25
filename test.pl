@@ -68,7 +68,7 @@ $tmp1 = UUID::compare( $bin1, $bin2 );  # for mac/ox (segfault)
 ok 1;                                   # for mac/os
 #die; # 5.20.1 gets here (on osx)
 $tmp2 = UUID::compare( $bin2, $bin1 ); # for mac/ox
-ok 1; # lets see of osx gets here... *sigh*
+ok 1; # lets see if 5.20.1 on osx gets here... *sigh* (no, it doesnt)
 $tmp2 = -UUID::compare( $bin2, $bin1 ); # for mac/ox
 ok $tmp1, $tmp2;                        # for mac/ox
 ok UUID::compare( $bin1, $bin2 ), -UUID::compare( $bin2, $bin1 );
