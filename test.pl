@@ -1,6 +1,6 @@
 use warnings;
 use Test;
-BEGIN { plan tests => 33 }
+BEGIN { plan tests => 34 }
 use UUID;
 
 
@@ -63,10 +63,12 @@ UUID::generate( $uuid ); # this is wrong, but dont fix it until after we figure 
 ok 1;                                   # for mac/os
 $bin2 = '1234567890123456';
 ok 1;                                   # for mac/os (pass)
-#die; # 5.18.4 gets here (and all others)
+#die; # 5.18.4 gets here (and all others on osx)
 $tmp1 = UUID::compare( $bin1, $bin2 );  # for mac/ox (segfault)
 ok 1;                                   # for mac/os
-#die; # 5.20.1 gets here
+#die; # 5.20.1 gets here (on osx)
+$tmp2 = UUID::compare( $bin2, $bin1 ); # for mac/ox
+ok 1; # lets see of osx gets here... *sigh*
 $tmp2 = -UUID::compare( $bin2, $bin1 ); # for mac/ox
 ok $tmp1, $tmp2;                        # for mac/ox
 ok UUID::compare( $bin1, $bin2 ), -UUID::compare( $bin2, $bin1 );
@@ -98,5 +100,6 @@ ok $$save1, $$save2;
 
 $rc = UUID::uuid();
 ok length($rc), 36;
+
 
 exit 0;

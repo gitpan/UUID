@@ -29,8 +29,8 @@
 
 #elif PERL__UUID__RPC_INT
 #define UUID_T uuid_t
-#define UUID2SV(u) ((char*)u)
-#define SV2UUID(s) ((unsigned char*)SvGROW(s, sizeof(uuid_t)+1))
+#define UUID2SV(u) ((char*)&u)
+#define SV2UUID(s) ((uuid_t*)SvGROW(s, sizeof(uuid_t)+1))
 
 #elif PERL__UUID__WIN_INT
 #define UUID_T UUID
@@ -170,7 +170,7 @@ int do_parse(SV *in, SV * out) {
     return rc;
 #elif PERL__UUID__RPC_INT
     int rc;
-    uuid_from_string(str, &uuid, &rc);
+    uuid_from_string(SV2STR(in), &uuid, &rc);
     if( !rc )
         sv_setpvn(out, UUID2SV(uuid), sizeof(UUID_T));
     return rc;
@@ -205,7 +205,7 @@ int do_is_null(SV *in) {
     return uuid_is_null(SV2UUID(in));
 #elif PERL__UUID__RPC_INT
     int32_t s;
-    return uuid_is_nil(SV2UUID(in),&s);
+    return uuid_is_nil(SV2UUID(in),&s);  /* need uuid_t* */
 #elif PERL__UUID__WIN_INT
     int rc;
     RPC_STATUS st;
@@ -224,7 +224,7 @@ int do_compare(SV *uu1, SV *uu2) {
     int32_t s;
     if( SvCUR(uu1) == sizeof(uuid_t) )
         if( SvCUR(uu2) == sizeof(uuid_t) )
-            return uuid_compare(SV2UUID(uu1), SV2UUID(uu2), &s);
+            return uuid_compare(SV2UUID(uu1), SV2UUID(uu2), &s);  /* need uuid_t* */
 #elif PERL__UUID__WIN_INT
 #endif
     return sv_cmp(uu1, uu2);
@@ -241,9 +241,10 @@ void do_copy(SV *dst, SV *src) {
 #elif PERL__UUID__RPC_INT
     int32_t s;
     if( SvCUR(src) != sizeof(uuid_t) )
-        uuid_create_nil(uuid, &s);
+        uuid_create_nil(&uuid, &s);
     else
-        uuid_copy(uuid, SV2UUID(src), &s);
+        memcpy(&uuid, SV2UUID(src), sizeof(uuid_t));
+        /* uuid_copy(uuid, SV2UUID(src), &s);  <-- duh, not on bsd */
 #elif PERL__UUID__WIN_INT
     if( SvCUR(src) != sizeof(uuid_t) )
         UuidCreateNil(&uuid);
@@ -267,7 +268,7 @@ SV* do_uuid() {
     int32_t s;
     uuid_create(&uuid, &s);
     /* this mallocs */
-    uuid_to_string(&uuid, &str, &s);
+    uuid_to_string(&uuid, (char**)&str, &s);
     sv = newSVpvn(str, UUID_BUF_SZ()-1);
     free(str);
     return sv;
@@ -277,7 +278,7 @@ SV* do_uuid() {
     RPC_CSTR str;
     UuidCreateSequential(&uuid);
     st = UuidToString(&uuid, &str); /* free str */
-    if( st != RCP_S_OK )
+    if( st != RPC_S_OK )
         croak("UuidToString error: %i", st);
     sv = newSVpvn(str, UUID_BUF_SZ()-1);
     RpcStringFree(&str);
@@ -288,6 +289,7 @@ SV* do_uuid() {
 
 
 MODULE = UUID		PACKAGE = UUID		
+
 
 void
 generate(str)

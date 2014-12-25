@@ -164,12 +164,15 @@ sub get_size {
     return $rv;
 }
 
+
 my $size = get_size( $header, $libs );
+push @$defs, "-DPERL__UUID__UUID_BUF_SZ=$size";
+
+($header = '-DPERL__UUID__'. uc $header ) =~ y{/.}{__};
+push @$defs, $header;
 
 
 warn "# ===> Writing Makefile\n";
-($header = '-DPERL__UUID__'. uc $header ) =~ y{/.}{__};
-push @$defs, $header;
 
 WriteMakefile1(
     'NAME'               => 'UUID',
@@ -183,7 +186,7 @@ WriteMakefile1(
     'INC'                => '',
     'PREREQ_PM'          => {},
     'CONFIGURE_REQUIRES' => {
-        'Devel::CheckLib' => 0,
+        'Devel::CheckLib' => '1.02',
     },
     'TEST_REQUIRES' => {
         'Test' => 0,

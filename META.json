@@ -28,7 +28,7 @@
       },
       "configure" : {
          "requires" : {
-            "Devel::CheckLib" : "0"
+            "Devel::CheckLib" : "1.02"
          }
       },
       "runtime" : {
@@ -38,5 +38,5 @@
       }
    },
    "release_status" : "stable",
-   "version" : "0.14"
+   "version" : "0.15"
 }
