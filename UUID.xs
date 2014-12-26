@@ -205,7 +205,7 @@ int do_is_null(SV *in) {
     return uuid_is_null(SV2UUID(in));
 #elif PERL__UUID__RPC_INT
     int32_t s;
-    return uuid_is_nil(SV2UUID(in),&s);  /* need uuid_t* */
+    return uuid_is_nil(SV2UUID(in),&s);
 #elif PERL__UUID__WIN_INT
     int rc;
     RPC_STATUS st;
@@ -217,16 +217,17 @@ int do_is_null(SV *in) {
 
 int do_compare(SV *uu1, SV *uu2) {
 #ifdef PERL__UUID__E2FS_INT
+/*
     if( SvCUR(uu1) == sizeof(uuid_t) )
         if( SvCUR(uu2) == sizeof(uuid_t) )
             return uuid_compare(SV2UUID(uu1), SV2UUID(uu2));
+*/
 #elif PERL__UUID__RPC_INT
-/* lets just compare sv's and see what we get (5.20.1 on osx) */
 /*
     int32_t s;
     if( SvCUR(uu1) == sizeof(uuid_t) )
         if( SvCUR(uu2) == sizeof(uuid_t) )
-            return uuid_compare(SV2UUID(uu1), SV2UUID(uu2), &s);  /* need uuid_t* */
+            return uuid_compare(SV2UUID(uu1), SV2UUID(uu2), &s);
 */
 #elif PERL__UUID__WIN_INT
 #endif

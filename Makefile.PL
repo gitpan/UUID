@@ -8,22 +8,22 @@ use ExtUtils::MakeMaker;
 # ARRRRR!.. there are _at_least_ 3 different UUID interfaces:
 # Free/NetBSD/MacOSX, Windows, and e2fsprogs.
 # ... this is gonna suck!
-warn "#\n";
+print "#\n";
 
 
 # if the compiler can't find it,
 # no sense wasting our time...
-warn "# ===> Checking for -luuid\n";
+print "# ===> Checking for -luuid\n";
 check_lib_or_exit(
     lib   => 'uuid',
     debug => 1,
 );
-warn "#\n";
+print "#\n";
 
 
 my @hfiles;
 for my $try (qw{ uuid/uuid.h uuid.h Rpc.h }) {
-    warn "# ===> Checking for $try\n";
+    print "# ===> Checking for $try\n";
     eval { assert_lib(
         lib      => 'uuid',
         header   => $try,
@@ -31,9 +31,9 @@ for my $try (qw{ uuid/uuid.h uuid.h Rpc.h }) {
     )};
     unless ( $@ ) {
         push @hfiles, $try;
-        warn "# ===> Found!\n";
+        print "# ===> Found!\n";
     }
-    warn "#\n";
+    print "#\n";
 }
 
 die "No header file found. Can't continue.\n" unless @hfiles;
@@ -54,7 +54,7 @@ die "No interface found. Can't continue.\n" unless $header;
 
 sub try_rpc {
     my $hdr = shift;
-    warn "# ===> Checking for RPC interface in $hdr\n";
+    print "# ===> Checking for RPC interface in $hdr\n";
     eval { assert_lib(
         lib      => 'uuid',
         header   => $hdr,
@@ -73,17 +73,17 @@ sub try_rpc {
             return 0;
         /,
     )};
-    if ($@) { my $L = length $@; warn "# ===> Err($L): \"$@\"\n"; return 0 }
+    if ($@) { my $L = length $@; print "# ===> Err($L): \"$@\"\n"; return 0 }
     push @$defs, '-DPERL__UUID__RPC_INT';
     push @$libs, '-luuid';
-    warn "# ===> Found!\n";
-    warn "#\n";
+    print "# ===> Found!\n";
+    print "#\n";
     return 1;
 }
 
 sub try_e2fs {
     my $hdr = shift;
-    warn "# ===> Checking for e2fs interface in $hdr\n";
+    print "# ===> Checking for e2fs interface in $hdr\n";
     eval { assert_lib(
         lib      => 'uuid',
         header   => $header,
@@ -106,17 +106,17 @@ sub try_e2fs {
             return 0;
         /,
     )};
-    if ($@) { my $L = length $@; warn "# ===> Err($L): \"$@\"\n"; return 0 }
+    if ($@) { my $L = length $@; print "# ===> Err($L): \"$@\"\n"; return 0 }
     push @$defs, '-DPERL__UUID__E2FS_INT';
     push @$libs, '-luuid';
-    warn "# ===> Found!\n";
-    warn "#\n";
+    print "# ===> Found!\n";
+    print "#\n";
     return 1;
 }
 
 sub try_win {
     my $hdr = shift;
-    warn "# ===> Checking for Win interface in $hdr\n";
+    print "# ===> Checking for Win interface in $hdr\n";
     eval { assert_lib(
         lib      => 'rpcrt4',
         header   => $header,
@@ -138,17 +138,17 @@ sub try_win {
             return 0;
         /,
     )};
-    if ($@) { my $L = length $@; warn "# ===> Err($L): \"$@\"\n"; return 0 }
+    if ($@) { my $L = length $@; print "# ===> Err($L): \"$@\"\n"; return 0 }
     push @$defs, '-DPERL__UUID__WIN_INT';
     push @$libs, '-lrpcrt4';
-    warn "# ===> Found!\n";
-    warn "#\n";
+    print "# ===> Found!\n";
+    print "#\n";
     return 1;
 }
 
 sub get_size {
     my ( $hdrs, $libs ) = @_;
-    warn "# ===> Checking binary size\n";
+    print "# ===> Checking binary size\n";
     ( my $lib = $libs->[0] ) =~ s/-l//;
     check_lib(
         lib      => $lib,
@@ -159,8 +159,8 @@ sub get_size {
         /,
     );
     my $rv = $? >> 8;
-    warn "# ===> $rv\n";
-    warn "#\n";
+    print "# ===> $rv\n";
+    print "#\n";
     return $rv;
 }
 
@@ -172,7 +172,7 @@ push @$defs, "-DPERL__UUID__UUID_BUF_SZ=$size";
 push @$defs, $header;
 
 
-warn "# ===> Writing Makefile\n";
+print "# ===> Writing Makefile\n";
 
 WriteMakefile1(
     'NAME'               => 'UUID',

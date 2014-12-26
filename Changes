@@ -1,5 +1,10 @@
 Revision history for Perl extension UUID.
 
+0.17 Fri Dec 26 05:05:13 EST 2014
+  - Removed two nested comments on BSD /* sigh */
+  - Let e2fs machines use sv_cmp too (let's see if OSX Frankenbox works)
+  - Changed warns in Makefile.PL to prints
+
 0.16 Thu Dec 25 18:24:23 EST 2014
   - Typo on Windows/BSD
   - Trying sv_cmp() instead of uuid_compare() on RPC-based machines
