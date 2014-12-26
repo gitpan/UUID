@@ -4,6 +4,8 @@ BEGIN { plan tests => 34 }
 use UUID;
 
 
+UUID::debug();
+
 UUID::generate( $bin );
 ok length $bin, 16;
 

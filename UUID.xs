@@ -19,8 +19,8 @@
 */
 
 
-/* this REALLY needs fixing */
-#define UUID_BUF_SZ() (37)
+/* 2 hex digits per byte + 4 separators + 1 trailing null */
+#define UUID_BUF_SZ() (2 * PERL__UUID__STRUCT_SZ + 4 + 1)
 
 #ifdef PERL__UUID__E2FS_INT
 #define UUID_T uuid_t
@@ -173,7 +173,7 @@ int do_parse(SV *in, SV * out) {
     uuid_from_string(SV2STR(in), &uuid, &rc);
     if( !rc )
         sv_setpvn(out, UUID2SV(uuid), sizeof(UUID_T));
-    return rc;
+    return rc == uuid_s_ok ? 0 : -1;
 #elif PERL__UUID__WIN_INT
     RPC_STATUS rc;
     rc = UuidFromString(SV2STR(in), &uuid);
@@ -291,6 +291,31 @@ SV* do_uuid() {
 }
 
 
+void do_debug() {
+    SV *bmsg, *smsg;
+#ifdef PERL__UUID__UUID_UUID_H
+    PerlIO_puts(PerlIO_stdout(), "# Header: uuid/uuid.h\n");
+#elif PERL__UUID__UUID_H
+    PerlIO_puts(PerlIO_stdout(), "# Header: uuid.h\n");
+#elif PERL__UUID__RPC_H
+    PerlIO_puts(PerlIO_stdout(), "# Header: rpc.h\n");
+#endif
+
+#ifdef PERL__UUID__E2FS_INT
+    PerlIO_puts(PerlIO_stdout(), "# Interface: e2fs\n");
+#elif PERL__UUID__RPC_INT
+    PerlIO_puts(PerlIO_stdout(), "# Interface: rpc\n");
+#elif PERL__UUID__WIN_INT
+    PerlIO_puts(PerlIO_stdout(), "# Interface: win\n");
+#endif
+
+    bmsg = mess("# Buffer size: %i\n", UUID_BUF_SZ());
+    PerlIO_puts(PerlIO_stdout(), SvPVX(bmsg));
+    smsg = mess("# Struct size: %i\n", PERL__UUID__STRUCT_SZ);
+    PerlIO_puts(PerlIO_stdout(), SvPVX(smsg));
+}
+
+
 
 MODULE = UUID		PACKAGE = UUID		
 
@@ -389,4 +414,10 @@ uuid()
     RETVAL = do_uuid();
     OUTPUT:
     RETVAL
+
+void
+debug()
+    PROTOTYPE:
+    CODE:
+    do_debug();
 

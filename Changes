@@ -1,5 +1,11 @@
 Revision history for Perl extension UUID.
 
+0.18 Fri Dec 26 08:20:06 EST 2014
+  - Allow for non-true/false return from uuid_from_string() on BSD
+  - Remove unused dependancy on Config.pm
+  - Added yet more debug info for 'make test' time
+  - Change -DPERL__UUID__UUID_BUF_SZ to -DPERL__UUID__STRUCT_SZ
+
 0.17 Fri Dec 26 05:05:13 EST 2014
   - Removed two nested comments on BSD /* sigh */
   - Let e2fs machines use sv_cmp too (let's see if OSX Frankenbox works)

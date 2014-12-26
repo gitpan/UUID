@@ -1,6 +1,5 @@
 use strict;
 use warnings;
-use Config;
 use Devel::CheckLib;
 use ExtUtils::MakeMaker;
 
@@ -146,7 +145,7 @@ sub try_win {
     return 1;
 }
 
-sub get_size {
+sub get_struct_size {
     my ( $hdrs, $libs ) = @_;
     print "# ===> Checking binary size\n";
     ( my $lib = $libs->[0] ) =~ s/-l//;
@@ -164,9 +163,9 @@ sub get_size {
     return $rv;
 }
 
+my $size = get_struct_size( $header, $libs );
+push @$defs, "-DPERL__UUID__STRUCT_SZ=$size";
 
-my $size = get_size( $header, $libs );
-push @$defs, "-DPERL__UUID__UUID_BUF_SZ=$size";
 
 ($header = '-DPERL__UUID__'. uc $header ) =~ y{/.}{__};
 push @$defs, $header;
