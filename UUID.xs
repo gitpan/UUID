@@ -268,11 +268,10 @@ SV* do_uuid() {
     return newSVpvn(str, UUID_BUF_SZ()-1);
 #elif PERL__UUID__RPC_INT
     SV *sv;
-    char str[UUID_BUF_SZ()];
+    char *str;
     int32_t s;
     uuid_create(&uuid, &s);
-    /* this mallocs */
-    uuid_to_string(&uuid, (char**)&str, &s);
+    uuid_to_string(&uuid, &str, &s); /* free str */
     sv = newSVpvn(str, UUID_BUF_SZ()-1);
     free(str);
     return sv;
