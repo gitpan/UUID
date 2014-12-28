@@ -8,6 +8,7 @@
 #elif PERL__UUID__UUID_H
 #include <uuid.h>
 #elif PERL__UUID__RPC_H
+#include <unistd.h>
 #include <Rpc.h>
 #endif
 

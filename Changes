@@ -1,11 +1,16 @@
 Revision history for Perl extension UUID.
 
+0.20 Sat Dec 27 19:27:28 EST 2014
+  - Also include unistd.h when using Rpc.h (Win)
+  - Fix pointer problem in -luuid search on Win
+  - Fix minor header propagation problem in Makefile.PL
+
 0.19 Fri Dec 26 17:09:12 EST 2014
   - Fix pointer confusion in do_uuid() on BSD [rt.cpan.org #101137]
 
 0.18 Fri Dec 26 08:20:06 EST 2014
   - Allow for non-true/false return from uuid_from_string() on BSD
-  - Remove unused dependancy on Config.pm
+  - Remove unused dependency on Config.pm
   - Added yet more debug info for 'make test' time
   - Change -DPERL__UUID__UUID_BUF_SZ to -DPERL__UUID__STRUCT_SZ
 

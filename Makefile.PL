@@ -85,7 +85,7 @@ sub try_e2fs {
     print "# ===> Checking for e2fs interface in $hdr\n";
     eval { assert_lib(
         lib      => 'uuid',
-        header   => $header,
+        header   => $hdr,
         debug    => 1,
         function => qq/
             int i;
@@ -118,14 +118,14 @@ sub try_win {
     print "# ===> Checking for Win interface in $hdr\n";
     eval { assert_lib(
         lib      => 'rpcrt4',
-        header   => $header,
+        header   => [ $hdr, 'unistd.h' ],
         debug    => 1,
         function => qq/
             int i;
             UUID u,uu;
             RPC_CSTR cs;
             RPC_STATUS st;
-            unsigned char s[37];
+            unsigned char *s;
             i  = UuidCompare(&u,&uu,&st);
             st = UuidCreate(&u);
             st = UuidCreateNil(&uu);
