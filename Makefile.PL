@@ -21,7 +21,7 @@ print "#\n";
 
 
 my @hfiles;
-for my $try (qw{ uuid/uuid.h uuid.h Rpc.h }) {
+for my $try (qw{ uuid/uuid.h uuid.h rpc.h }) {
     print "# ===> Checking for $try\n";
     eval { assert_lib(
         lib      => 'uuid',
@@ -118,7 +118,7 @@ sub try_win {
     print "# ===> Checking for Win interface in $hdr\n";
     eval { assert_lib(
         lib      => 'rpcrt4',
-        header   => [ $hdr, 'unistd.h' ],
+        header   => [ $hdr, 'rpcdce.h' ],
         debug    => 1,
         function => qq/
             int i;

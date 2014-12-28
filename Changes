@@ -1,5 +1,12 @@
 Revision history for Perl extension UUID.
 
+0.22 Sun Dec 28 08:42:23 EST 2014
+  - Ugh! Forgot to include rpcdec.h in UUID.xs
+
+0.21 Sun Dec 28 08:35:23 EST 2014
+  - Instead of unistd.h, try rpcdce.h on Win
+  - Minor cleanup in test.pl
+
 0.20 Sat Dec 27 19:27:28 EST 2014
   - Also include unistd.h when using Rpc.h (Win)
   - Fix pointer problem in -luuid search on Win

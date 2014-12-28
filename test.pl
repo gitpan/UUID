@@ -60,19 +60,17 @@ ok abs(UUID::compare( $bin1, $bin2 )), 1;
 ok abs(UUID::compare( $bin2, $bin1 )), 1;
 
 # sane compare
-$uuid=1; #kill warning until we get osx sorted
-UUID::generate( $uuid ); # this is wrong, but dont fix it until after we figure out the segfault in macos
-ok 1;                                   # for mac/os
+$uuid=1;
+UUID::generate( $uuid ); # this is wrong. dont want to fix it though.
+ok 1;
 $bin2 = '1234567890123456';
-ok 1;                                   # for mac/os (pass)
-#die; # 5.18.4 gets here (and all others on osx)
-$tmp1 = UUID::compare( $bin1, $bin2 );  # for mac/ox (segfault)
-ok 1;                                   # for mac/os
-#die; # 5.20.1 gets here (on osx)
-$tmp2 = UUID::compare( $bin2, $bin1 ); # for mac/ox
-ok 1; # lets see if 5.20.1 on osx gets here... *sigh* (no, it doesnt)
-$tmp2 = -UUID::compare( $bin2, $bin1 ); # for mac/ox
-ok $tmp1, $tmp2;                        # for mac/ox
+ok 1;
+$tmp1 = UUID::compare( $bin1, $bin2 );
+ok 1;
+$tmp2 = UUID::compare( $bin2, $bin1 );
+ok 1;
+$tmp2 = -UUID::compare( $bin2, $bin1 );
+ok $tmp1, $tmp2;
 ok UUID::compare( $bin1, $bin2 ), -UUID::compare( $bin2, $bin1 );
 $bin2 = $bin1;
 ok UUID::compare( $bin1, $bin2 ), 0;
