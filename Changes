@@ -1,5 +1,11 @@
 Revision history for Perl extension UUID.
 
+0.23 Sun Dec 28 18:58:04 EST 2014
+  - Reverse order of rpc.h and rpcdce.h in UUID.xs (rpc.h first)
+
+0.22 Sun Dec 28 08:42:23 EST 2014
+  - Ugh! Forgot to include rpcdce.h in UUID.xs
+
 0.21 Sun Dec 28 08:35:23 EST 2014
   - Instead of unistd.h, try rpcdce.h on Win
   - Minor cleanup in test.pl
